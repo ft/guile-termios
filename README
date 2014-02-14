@@ -1,7 +1,7 @@
 POSIX termios interface for GNU Guile
 
 To query and change settings of serial devices on POSIX systems, the termios
-API is used. GNU Guile doesn't have an interface for that based in. This module
+API is used. GNU Guile doesn't have an interface for that built in. This module
 implements this interface by use of Guile's dynamic FFI.
 
 The problem with Guile's dynamic FFI is, that if you need to make use of

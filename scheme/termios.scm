@@ -17,6 +17,8 @@
   #:use-module (termios system)
   #:export (make-termios-struct
             parse-termios-struct
+            get-field-from-termios
+            put-field-into-termios
 
             cf-get-ispeed
             cf-get-ospeed
@@ -47,6 +49,21 @@
 
 (define (parse-termios-struct termios)
   (parse-c-struct termios termios-struct))
+
+(define termios-fields (map (lambda (x) (car x))
+                            termios-struct-offsets))
+
+(define (get-field-from-termios lst field)
+  (let ((idx (list-index termios-fields field)))
+    (if idx
+        (list-ref lst idx)
+        #f)))
+
+(define (put-field-into-termios lst field value)
+  (let ((idx (list-index termios-fields field)))
+    (if idx
+        (list-set! lst idx value)
+        #f)))
 
 ;; Macro to help with multiple ‘pointer->procedure’ calls.
 (define-syntax define-libc-procedure

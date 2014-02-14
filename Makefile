@@ -12,10 +12,17 @@ scheme/termios/system.scm: gps
 	[ -d scheme/termios ] || mkdir -p scheme/termios
 	./gps > $@
 
-clean:
+compile:
+	$(MAKE) scheme/termios/system.scm
+	sh ./compile
+
+clean-byte-compile:
+	rm -Rf scheme/*.go scheme/termios/*.go
+
+clean: clean-byte-compile
 	rm -Rf gps gen-platform-specifics.c scheme/termios *~ scheme/*~
 
 test:
 	sh ./test-this-terminal.sh
 
-.PHONY: all clean test
+.PHONY: all clean clean-byte-compile compile test

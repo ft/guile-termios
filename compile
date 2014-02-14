@@ -1,0 +1,13 @@
+#!/bin/sh
+
+GUILE_LOAD_PATH=$PWD/scheme
+export GUILE_LOAD_PATH
+
+for dir in scheme/*/ scheme/; do
+    [ ! -d "$dir" ] && continue
+    (cd "$dir" && for input in *.scm; do
+                      output="${input%.*}.go"
+                      [ "$input" -nt "$output" ] || continue
+                      guild compile -o "$output" "$input"
+                  done; )
+done

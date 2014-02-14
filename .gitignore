@@ -1,3 +1,4 @@
 *.c
+*.go
 gps
 scheme/termios/

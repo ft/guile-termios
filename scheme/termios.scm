@@ -41,6 +41,10 @@
 ;; libc, which is all we need.
 (define libc (dynamic-link))
 
+(define termios-struct
+  (map (lambda (x) (cddr x))
+       termios-struct-offsets))
+
 (define (make-termios-struct)
   (make-c-struct termios-struct
                  (list 0 0 0 0 0

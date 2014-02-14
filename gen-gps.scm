@@ -47,10 +47,6 @@
 (define gps-footer
   `(""
     "    printf(\"\\n\");"
-    "    printf(\"(define-public termios-struct\\n\");"
-    "    printf(\"  (map (lambda (x) (cddr x))\\n\");"
-    "    printf(\"       termios-struct-offsets))\\n\");"
-    ""
     "    return EXIT_SUCCESS;"
     "}"))
 

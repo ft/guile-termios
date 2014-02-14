@@ -1,0 +1,15 @@
+POSIX termios interface for GNU Guile
+
+To query and change settings of serial devices on POSIX systems, the termios
+API is used. GNU Guile doesn't have an interface for that based in. This module
+implements this interface by use of Guile's dynamic FFI.
+
+The problem with Guile's dynamic FFI is, that if you need to make use of
+preprocessor macros, typesets or platform-specific struct layouts it seems to
+fall a little short.
+
+To get this working anyway, this module does this:
+
+  - Use ‘gen-gps.scm’ to generate ‘gen-platform-specifics.c’.
+
+  - Use ‘gen-platform-specifics.c’ to generate ‘scheme/termios/system.scm’.

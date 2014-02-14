@@ -185,7 +185,7 @@
 (define (print-offsets lst)
   (newline)
   (format #t "    printf(\"\\n;; struct termios:\\n\");~%")
-  (format #t "    printf(\"(define termios-struct-offsets\\n (sort `(\\n\");~%")
+  (format #t "    printf(\"(define-public termios-struct-offsets\\n (sort `(\\n\");~%")
   (map (lambda (x)
          (let ((needed-macro (if (null? (cdddr x))
                                  #f

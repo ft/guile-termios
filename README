@@ -13,3 +13,18 @@ To get this working anyway, this module does this:
   - Use ‘gen-gps.scm’ to generate ‘gen-platform-specifics.c’.
 
   - Use ‘gen-platform-specifics.c’ to generate ‘scheme/termios/system.scm’.
+
+
+This module was so far only tested on Debian Linux with GNU libc using GNU
+Guile 2.0.9.
+
+To generate, byte-compile and install the module, use these steps:
+
+  % make
+  % make compile
+  # make install
+
+If you got more than one version of guile installed, you may use the
+GUILE_BINARY make variable to point the build-system to the right binary:
+
+  # make install GUILE_BINARY=/usr/local/bin/guile

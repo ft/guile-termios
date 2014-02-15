@@ -18,7 +18,7 @@
   #:export (make-termios-struct
             parse-termios-struct
             get-field-from-termios
-            put-field-into-termios
+            put-field-into-termios!
 
             cf-get-ispeed
             cf-get-ospeed
@@ -64,7 +64,7 @@
         (list-ref lst idx)
         #f)))
 
-(define (put-field-into-termios lst field value)
+(define (put-field-into-termios! lst field value)
   (let ((idx (list-index termios-fields field)))
     (if idx
         (list-set! lst idx value)

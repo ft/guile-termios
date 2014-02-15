@@ -75,7 +75,7 @@
                            (dynamic-func (symbol->string (quote name)) libc)
                            (list arg ...))))))
 
-;; FFI links into the standard C library
+;; FFI links to the POSIX termios functions in the C library
 
 (define-libc-procedure int tcdrain int)
 (define-libc-procedure int tcflow int int)

@@ -51,7 +51,7 @@
 ;; and it also disables parity bit generation (which we did manually before for
 ;; demonstration purposes). So, that's pretty much 8N1 for us with no effort at
 ;; all.
-(cf-make-raw ts)
+(cf-make-raw! ts)
 
 ;; Set the desired baud-rate.
 (cf-set-speed! ts termios-B9600)

@@ -29,7 +29,7 @@
             tc-get-attr!
             tc-set-attr
 
-            cf-make-raw
+            cf-make-raw!
             tc-drain
             tc-flow
             tc-flush
@@ -119,7 +119,7 @@
 (define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
   (tcsetattr (port->fdes port) optional-action termios))
 
-(define (cf-make-raw termios)
+(define (cf-make-raw! termios)
   (cfmakeraw termios))
 
 (define (cf-get-ispeed termios)

@@ -1,5 +1,5 @@
-#ifndef INC_GUILE_CONFIG_H
-#define INC_GUILE_CONFIG_H
+#ifndef INC_GUILE_TERMIOS_CONFIG_H
+#define INC_GUILE_TERMIOS_CONFIG_H
 
 #define-maybe C_IFLAG
 #define-maybe C_OFLAG
@@ -10,4 +10,4 @@
 #define-maybe C_ISPEED
 #define-maybe C_OSPEED
 
-#endif /* INC_GUILE_CONFIG_H */
+#endif /* INC_GUILE_TERMIOS_CONFIG_H */

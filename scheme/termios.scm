@@ -3,14 +3,6 @@
 ;;
 ;; Terms for redistribution and use can be found in LICENCE.
 
-;; Work in progress. Handling structs in guile's FFI isn't quite as convenient
-;; as one might like. Also, for handling typedefs and #defines from C header
-;; files, we kind of need to read those header files. This could be a job done
-;; at build time, but... well, there's no code for that either. So I'm stuck.
-
-;; This also misses some code to conveniently alter the standard fields in the
-;; termios structure. (The speed entries have API functions for access.)
-
 (define-module (termios)
   #:use-module (ice-9 optargs)
   #:use-module (system foreign)

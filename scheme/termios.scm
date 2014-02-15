@@ -24,6 +24,7 @@
             cf-get-ospeed
             cf-set-ispeed!
             cf-set-ospeed!
+            cf-set-speed!
 
             tc-get-attr!
             tc-set-attr

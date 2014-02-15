@@ -6,8 +6,11 @@ all: gps scheme/termios/system.scm
 gen-platform-specifics.c: gen-gps.scm gen-gps.sh
 	GUILE_BINARY="$(GUILE_BINARY)" sh ./gen-gps.sh > $@
 
-gps: gen-platform-specifics.c
+gps: gen-platform-specifics.c config.h
 	$(CC) -o $@ $<
+
+config.h: config.h.in gen-config.h.sh
+	C_COMPILER="$(CC)" sh ./gen-config.h.sh
 
 scheme/termios/system.scm: gps
 	[ -d scheme/termios ] || mkdir -p scheme/termios
@@ -22,6 +25,7 @@ clean-byte-compile:
 
 clean: clean-byte-compile
 	rm -Rf gps gen-platform-specifics.c scheme/termios *~ scheme/*~
+	rm -f config.h
 
 install:
 	GUILE_BINARY="$(GUILE_BINARY)" sh ./install

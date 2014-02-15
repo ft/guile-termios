@@ -1,0 +1,13 @@
+#ifndef INC_GUILE_CONFIG_H
+#define INC_GUILE_CONFIG_H
+
+#define-maybe C_IFLAG
+#define-maybe C_OFLAG
+#define-maybe C_CFLAG
+#define-maybe C_LFLAG
+#define-maybe C_LINE
+#define-maybe C_CC
+#define-maybe C_ISPEED
+#define-maybe C_OSPEED
+
+#endif /* INC_GUILE_CONFIG_H */

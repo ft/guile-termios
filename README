@@ -12,7 +12,10 @@ To get this working anyway, this module does this:
 
   - Use ‘gen-gps.scm’ to generate ‘gen-platform-specifics.c’.
 
-  - Use ‘gen-platform-specifics.c’ to generate ‘scheme/termios/system.scm’.
+  - Use ‘gen-config.h.sh’ to generate ‘config.h’.
+
+  - Use ‘gen-platform-specifics.c’ and ‘config.h’ to generate
+    ‘scheme/termios/system.scm’.
 
 
 This module was so far only tested on Debian Linux with GNU libc using GNU

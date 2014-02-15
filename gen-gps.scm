@@ -29,6 +29,7 @@
     "#include <stdio.h>"
     ""
     "#include <termios.h>"
+    "#include \"config.h\""
     ""
     "int"
     "main(int argc, char *argv[])"
@@ -142,14 +143,14 @@
     VTDLY))
 
 (define gps-offsets
-  '((c-iflag c_iflag tcflag-t)
-    (c-oflag c_oflag tcflag-t)
-    (c-cflag c_cflag tcflag-t)
-    (c-lflag c_lflag tcflag-t)
-    (c-line c_line cc-t)
-    (c-cc c_cc "(make-list termios-NCCS cc-t)")
-    (c-ispeed c_ispeed speed-t _HAVE_STRUCT_TERMIOS_C_ISPEED)
-    (c-ospeed c_ospeed speed-t _HAVE_STRUCT_TERMIOS_C_OSPEED)))
+  '((c-iflag c_iflag tcflag-t GUILE_TERMIOS_HAS_C_IFLAG)
+    (c-oflag c_oflag tcflag-t GUILE_TERMIOS_HAS_C_OFLAG)
+    (c-cflag c_cflag tcflag-t GUILE_TERMIOS_HAS_C_CFLAG)
+    (c-lflag c_lflag tcflag-t GUILE_TERMIOS_HAS_C_LFLAG)
+    (c-line c_line cc-t GUILE_TERMIOS_HAS_C_LINE)
+    (c-cc c_cc "(make-list termios-NCCS cc-t)" GUILE_TERMIOS_HAS_C_CC)
+    (c-ispeed c_ispeed speed-t GUILE_TERMIOS_HAS_C_ISPEED)
+    (c-ospeed c_ospeed speed-t GUILE_TERMIOS_HAS_C_OSPEED)))
 
 (define (print-list lst)
   (map (lambda (x)
@@ -183,17 +184,11 @@
   (format #t "    printf(\"\\n;; struct termios:\\n\");~%")
   (format #t "    printf(\"(define-public termios-struct-offsets\\n (sort `(\\n\");~%")
   (map (lambda (x)
-         (let ((needed-macro (if (null? (cdddr x))
-                                 #f
-                                 (cadddr x))))
-           (if needed-macro
-               (format #t "#ifdef ~a~%" needed-macro))
-           (format #t "    printf(\"  (~a %ld . ,~a)\\n\""
-                   (car x) (caddr x))
-           (format #t ", (long) offsetof(struct termios, ~a));~%"
-                   (cadr x))
-           (if needed-macro
-               (format #t "#endif /* ~a */~%" needed-macro))))
+         (let ((needed-macro (cadddr x)))
+           (format #t "#ifdef ~a~%" needed-macro)
+           (format #t "    printf(\"  (~a %ld . ,~a)\\n\"" (car x) (caddr x))
+           (format #t ", (long) offsetof(struct termios, ~a));~%" (cadr x))
+           (format #t "#endif /* ~a */~%" needed-macro)))
        lst)
   (format #t "    printf(\"")
   (format #t " )\\n (lambda (x y) (< (cadr x) (cadr y)))))")

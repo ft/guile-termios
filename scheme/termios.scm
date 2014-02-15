@@ -46,10 +46,14 @@
   (map (lambda (x) (cddr x))
        termios-struct-offsets))
 
-(define* (make-termios-struct #:optional
-                              (value (list 0 0 0 0 0
-                                           (make-list termios-NCCS 0)
-                                           0 0)))
+(define termios-empty
+  (map (lambda (x)
+         (if (eq? (car x) 'c-cc)
+             (make-list termios-NCCS 0)
+             0))
+       termios-struct-offsets))
+
+(define* (make-termios-struct #:optional (value termios-empty))
   (make-c-struct termios-struct value))
 
 (define (parse-termios-struct termios)

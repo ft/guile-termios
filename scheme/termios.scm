@@ -25,7 +25,11 @@
             tc-drain
             tc-flow
             tc-flush
-            tc-send-break))
+            tc-send-break
+
+            termios-version))
+
+(define termios-version "0.1")
 
 ;; (dynamic-link "libc") fails on debian, because the "libc.so" file it finds
 ;; it not actually an ELF library but rather a GNU ld script. Without library,

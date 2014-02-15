@@ -75,9 +75,14 @@
   (syntax-rules ()
     ((_ retval name arg ...)
      (define name
-       (pointer->procedure retval
-                           (dynamic-func (symbol->string (quote name)) libc)
-                           (list arg ...))))))
+       (let ((df (catch #t
+                   (lambda ()
+                     (dynamic-func (symbol->string (quote name)) libc))
+                   (lambda (k . a)
+                     #f))))
+         (if df
+             (pointer->procedure retval df (list arg ...))
+             #f))))))
 
 ;; FFI links to the POSIX termios functions in the C library
 
@@ -119,8 +124,47 @@
 (define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
   (tcsetattr (port->fdes port) optional-action termios))
 
-(define (cf-make-raw! termios)
-  (cfmakeraw termios))
+(define (cfmakeraw-fallback termios)
+  (let* ((ts-scm (parse-termios-struct termios))
+         (cflag (get-field-from-termios ts-scm 'c-cflag))
+         (oflag (get-field-from-termios ts-scm 'c-oflag))
+         (iflag (get-field-from-termios ts-scm 'c-iflag))
+         (lflag (get-field-from-termios ts-scm 'c-lflag)))
+    (put-field-into-termios!
+     ts-scm 'c-iflag (logand iflag
+                             (logxor iflag
+                                     (logior termios-BRKINT
+                                             termios-IGNBRK
+                                             termios-PARMRK
+                                             termios-ISTRIP
+                                             termios-INLCR
+                                             termios-IGNCR
+                                             termios-ICRNL
+                                             termios-IXON))))
+    (put-field-into-termios!
+     ts-scm 'c-oflag (logand oflag (logxor oflag termios-OPOST)))
+    (put-field-into-termios!
+     ts-scm 'c-lflag (logand lflag
+                             (logxor lflag
+                                     (logior termios-ECHO
+                                             termios-ECHONL
+                                             termios-ICANON
+                                             termios-ISIG
+                                             termios-IEXTEN))))
+    (put-field-into-termios!
+     ts-scm 'c-cflag (logior termios-CS8
+                             (logand cflag
+                                     (logxor cflag
+                                             (logior termios-CSIZE
+                                                     termios-PARENB)))))
+    (make-termios-struct ts-scm)))
+
+(define-syntax cf-make-raw!
+  (syntax-rules ()
+    ((_ termios)
+     (if cfmakeraw
+         (cfmakeraw termios)
+         (set! termios (cfmakeraw-fallback termios))))))
 
 (define (cf-get-ispeed termios)
   (cfgetispeed termios))

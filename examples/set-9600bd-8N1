@@ -1,0 +1,62 @@
+;; -*- scheme -*-
+
+;; Copyright (c) 2014 Frank Terbeck <ft@bewatermyfriend.org>
+;; All rights reserved.
+;;
+;; Terms for redistribution and use can be found in LICENCE.
+
+(use-modules (termios)
+             (termios system))
+
+(define serial-device (let ((arg (cdr (command-line))))
+                        (if (null? arg)
+                            #f
+                            (car arg))))
+
+(unless serial-device
+  (format #t "usage: set-9600bd-8N1 <device>~%")
+  (quit 0))
+
+;; Open the serial device:
+(define tty (open-io-file serial-device))
+
+;; Create an empty termios data-structure for C land.
+(define ts (make-termios-struct))
+
+;; Get the current setings of the serial-device.
+(tc-get-attr! tty ts)
+
+;; Helper procedure to unset a set of bits in a word.
+(define (logunset word bitmask)
+  (logand word (logxor word bitmask)))
+
+;; For 8N1 the PARENB bit needs to be unset. For understanding what the
+;; different fields in the data-structure actually do, see your system's
+;; termios documentation.
+(let* (;; Get the C-data-structure to scheme land.
+       (ts-scm (parse-termios-struct ts))
+       ;; Unset the PARENB bitmask in the old c-cflag field and store that
+       ;; value in a new value.
+       (new-cflag (logunset (get-field-from-termios ts-scm 'c-cflag)
+                            termios-PARENB)))
+
+  ;; Put the newly constructed c-cfield into the ts-scm data structure.
+  (put-field-into-termios! ts-scm 'c-cflag new-cflag)
+
+  ;; And put the structure back into the land of C.
+  (set! ts (make-termios-struct ts-scm)))
+
+;; Let's take a short-cut now: Raw mode disables all special treatment of any
+;; characters, and also sets the protocol to only one stop-bit and 8 data bits
+;; and it also disables parity bit generation (which we did manually before for
+;; demonstration purposes). So, that's pretty much 8N1 for us with no effort at
+;; all.
+(cf-make-raw ts)
+
+;; Set the desired baud-rate.
+(cf-set-speed! ts termios-B9600)
+
+;; Finally, transfer the setup contained within ‘ts’ the the serial device and
+;; close the port.
+(tc-set-attr tty ts)
+(close-port tty)

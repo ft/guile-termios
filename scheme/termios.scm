@@ -90,6 +90,15 @@
                    (lambda ()
                      (dynamic-func (symbol->string (quote name)) libc))
                    (lambda (k . a)
+                     (unless (memq (quote name)
+                                   '(cfsetspeed cfmakeraw))
+                       ;; If we're in here, the FFI couldn't find a function
+                       ;; symbol in the given library link (the libc variable)
+                       ;; and there is no workaround for the missing function.
+                       ;; Warn the user about that upon loading the module.
+                       (format (current-error-port)
+                               "guile-termios: WARNING! Symbol not found: ~a~%"
+                               (quote name)))
                      #f))))
          (if df
              (pointer->procedure retval df (list arg ...))

@@ -36,7 +36,18 @@
 ;; this creates a library-handle for all symbols that are available when the
 ;; ‘dynamic-link’ call is made, which will likely contain the symbols from
 ;; libc, which is all we need.
-(define libc (dynamic-link))
+;;
+;; On cygwin, the library that contains the symbols required in here is
+;; "cygwin1.dll".
+
+(define-syntax dynamic-link-w/system
+  (lambda (x)
+    (syntax-case x ()
+      ((_) (cond ((string-suffix? "-cygwin" %host-type)
+                  #'(dynamic-link "cygwin1"))
+                 (else #'(dynamic-link)))))))
+
+(define libc (dynamic-link-w/system))
 
 (define termios-struct
   (map (lambda (x) (cddr x))

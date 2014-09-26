@@ -9,8 +9,7 @@
 ;; an exception and the test will therefore fail. It's not much of a test, but
 ;; it makes sure, the module isn't complete broken.
 
-(use-modules (termios)
-             (ice-9 pretty-print))
+(use-modules (termios))
 
 (define tty (current-input-port))
 (define ts (make-termios-struct))
@@ -18,5 +17,6 @@
 (unless (= (tc-get-attr! tty ts) 0)
   (throw 'tc-get-attr!-failed))
 
-(pretty-print (parse-termios-struct ts))
+(write (parse-termios-struct ts))
+(newline)
 (quit 0)

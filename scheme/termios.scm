@@ -27,6 +27,7 @@
             tc-flush
             tc-send-break
 
+            termios-failure?
             termios-version))
 
 (define termios-version "0.2+git")
@@ -48,6 +49,9 @@
                  (else #'(dynamic-link)))))))
 
 (define libc (dynamic-link-w/system))
+
+(define (termios-failure? result)
+  (< result 0))
 
 (define termios-struct
   (map (lambda (x) (cddr x))

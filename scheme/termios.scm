@@ -205,5 +205,7 @@
 (define (cf-set-speed! termios speed)
   (if cfsetspeed
       (cfsetspeed termios speed)
-      (begin (cfsetispeed termios speed)
-             (cfsetospeed termios speed))))
+      (let  ((res (cfsetispeed termios speed)))
+        (if (< res 0)
+            res
+            (cfsetospeed termios speed)))))

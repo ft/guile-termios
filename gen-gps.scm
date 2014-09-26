@@ -27,6 +27,7 @@
     "#include <stdlib.h>"
     "#include <stdint.h>"
     "#include <stdio.h>"
+    "#include <errno.h>"
     ""
     "#include <termios.h>"
     "#include \"config.h\""
@@ -167,7 +168,11 @@
          (format #t " sizeof(~a) * 8" (cdr x))
          (display ");")
          (newline))
-       lst))
+       lst)
+  (display "    printf(\"")
+  (format #t "(define-public errno-t int%d)\\n\", (sizeof errno) * 8")
+  (display ");")
+  (newline))
 
 (define (print-defines lst)
   (newline)

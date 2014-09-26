@@ -27,6 +27,7 @@
             tc-flush
             tc-send-break
 
+            get-errno
             termios-failure?
             termios-version))
 
@@ -49,6 +50,13 @@
                  (else #'(dynamic-link)))))))
 
 (define libc (dynamic-link-w/system))
+
+(define errno (dynamic-pointer "errno" libc))
+
+(define (get-errno)
+  (if (null-pointer? errno)
+      (list 0)
+      (parse-c-struct errno (list errno-t))))
 
 (define (termios-failure? result)
   (< result 0))

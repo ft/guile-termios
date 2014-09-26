@@ -21,7 +21,6 @@
             tc-get-attr!
             tc-set-attr
 
-            cf-make-raw!
             tc-drain
             tc-flow
             tc-flush

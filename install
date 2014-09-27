@@ -50,8 +50,10 @@ create_compiled_dir "/termios"
 
 install_src_file scheme/termios.scm
 install_src_file scheme/termios/system.scm "/termios"
+install_src_file scheme/termios/with-exceptions.scm "/termios"
 
 install_compiled_file scheme/termios.go
 install_compiled_file scheme/termios/system.go "/termios"
+install_compiled_file scheme/termios/with-exceptions.go "/termios"
 
 exit 0

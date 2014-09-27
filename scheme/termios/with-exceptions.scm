@@ -4,6 +4,7 @@
 
 (define-module (termios with-exceptions)
   #:use-module ((termios) #:prefix base:)
+  #:use-module (termios system)
   #:re-export ((base:cf-get-ispeed . cf-get-ispeed)
                (base:cf-get-ospeed . cf-get-ospeed)
                (base:cf-make-raw! . cf-make-raw!)

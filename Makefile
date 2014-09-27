@@ -31,6 +31,6 @@ install:
 	GUILE_BINARY="$(GUILE_BINARY)" sh ./install
 
 test:
-	sh ./test-this-terminal.sh
+	sh ./tests/test-this-terminal.sh
 
 .PHONY: all clean clean-byte-compile compile install test

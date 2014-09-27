@@ -5,51 +5,61 @@
              (termios)
              (termios system))
 
+(define (add-base-test tty ts rate reset getter setter)
+  (tap/comment "--- --- ---")
+  (define-test (format #f "base-test: ~a works (~a)"
+                       (car setter)
+                       (car rate))
+    (pass-if-false (termios-failure? ((cdr setter) ts (cdr rate)))))
+  (define-test (format #f "base-test: tc-set-attr works (~a)"
+                       (car rate))
+    (pass-if-false (termios-failure? (tc-set-attr tty ts))))
+  (define-test (format #f "base-test: ~a works (~a) [reset-step]"
+                       (car setter)
+                       (car reset))
+    (pass-if-false (termios-failure? ((cdr setter) ts (cdr reset)))))
+  (define-test "base-test: tc-get-attr! works"
+    (pass-if-false (termios-failure? (tc-get-attr! tty ts))))
+  (define-test (format #f "base-test: ~a works (~a)"
+                       (car getter)
+                       (car rate))
+    (pass-if-= (cdr rate) ((cdr getter) ts))))
+
 (with-test-bundle (guile termios baudrate)
-  (plan 5)
+  (plan (+ 2 (* 5 4)))
 
   ;; Setup
   (let ((tty (open-device))
         (ts (make-termios-struct)))
 
-    (tc-get-attr! tty ts)
+    (define-test "Initial tc-get-attr! works"
+      (pass-if-false (termios-failure? (tc-get-attr! tty ts))))
     (define-test "Default baudrate (19200bd) of test device detected"
       (pass-if-= termios-B19200 (cf-get-ispeed ts)))
 
     ;; Here's what we do, once drawn out in detail:
 
-    ;; Change entry in termios data structure
-    (cf-set-speed! ts termios-B115200)
-    ;; Transfer changed settings to device
-    (tc-set-attr tty ts)
-    ;; Make sure, there' something wrong in the structure
-    (cf-set-speed! ts termios-B9600)
-    ;; Read the current settings back.
-    (tc-get-attr! tty ts)
-    ;; Test.
-    (define-test "Changing baudrate to 115200bd works"
-      (pass-if-= termios-B115200 (cf-get-ispeed ts)))
+    (add-base-test tty ts
+                   (name-value-pair termios-B115200)
+                   (name-value-pair termios-B9600)
+                   (name-value-pair cf-get-ispeed)
+                   (name-value-pair cf-set-speed!))
+    (add-base-test tty ts
+                   (name-value-pair termios-B300)
+                   (name-value-pair termios-B9600)
+                   (name-value-pair cf-get-ispeed)
+                   (name-value-pair cf-set-speed!))
+    (add-base-test tty ts
+                   (name-value-pair termios-B1200)
+                   (name-value-pair termios-B9600)
+                   (name-value-pair cf-get-ispeed)
+                   (name-value-pair cf-set-ispeed!))
+    (add-base-test tty ts
+                   (name-value-pair termios-B2400)
+                   (name-value-pair termios-B9600)
+                   (name-value-pair cf-get-ospeed)
+                   (name-value-pair cf-set-ospeed!))
 
-    (cf-set-speed! ts termios-B300)
-    (tc-set-attr tty ts)
-    (cf-set-speed! ts termios-B9600)
-    (tc-get-attr! tty ts)
-    (define-test "Changing baudrate to 300bd works"
-      (pass-if-= termios-B300 (cf-get-ispeed ts)))
-
-    (cf-set-ispeed! ts termios-B1200)
-    (tc-set-attr tty ts)
-    (cf-set-ispeed! ts termios-B9600)
-    (tc-get-attr! tty ts)
-    (define-test "Changing baudrate to 1200bd works (ispeed)"
-      (pass-if-= termios-B1200 (cf-get-ispeed ts)))
-
-    (cf-set-ospeed! ts termios-B2400)
-    (tc-set-attr tty ts)
-    (cf-set-ospeed! ts termios-B9600)
-    (tc-get-attr! tty ts)
-    (define-test "Changing baudrate to 2400bd works (ospeed)"
-      (pass-if-= termios-B2400 (cf-get-ospeed ts)))
 
     ;; Teardown
     (close-port tty)))

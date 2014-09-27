@@ -4,8 +4,12 @@
 
 (define-module (test termios)
   #:use-module (ice-9 optargs)
-  #:export (open-device))
+  #:export (open-device
+            name-value-pair))
 
 (define* (open-device #:key (device (getenv "GUILE_TERMIOS_TTY")))
   (open-io-file device))
 
+(define-syntax name-value-pair
+  (syntax-rules ()
+    ((_ x) (cons 'x x))))

@@ -27,7 +27,7 @@ clean-byte-compile:
 	rm -Rf scheme/*.go scheme/termios/*.go
 
 clean: clean-byte-compile
-	rm -Rf gps gen-platform-specifics.c scheme/termios *~ scheme/*~
+	rm -Rf gps gen-platform-specifics.c scheme/termios/*~ scheme/*~ *~
 	rm -f config.h
 
 install:

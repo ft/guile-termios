@@ -38,7 +38,7 @@ plausible:
 	sh ./tests/test-this-terminal.sh
 
 test-suite:
-	$(HARNESS) --verbose --color --merge --exec $(TESTDRIVER) ./tests/*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --color --merge --exec $(TESTDRIVER) ./tests/*.t
 
 test: plausible test-suite
 

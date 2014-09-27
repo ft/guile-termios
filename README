@@ -21,13 +21,42 @@ To get this working anyway, this module does this:
 This module was so far only tested on Debian Linux with GNU libc using GNU
 Guile 2.0.9.
 
-To generate, byte-compile and install the module, use these steps:
+To generate, byte-compile, test and install the module, use these steps:
 
   % make
   % make compile
+  % make test
   # make install
 
 If you got more than one version of guile installed, you may use the
 GUILE_BINARY make variable to point the build-system to the right binary:
 
   # make install GUILE_BINARY=/usr/local/bin/guile
+
+
+About the test-suite...
+-----------------------
+
+The test-suite run by "make test" requires the following additional software:
+
+  - Perl 5
+  - The POSIX Perl module (this is a standard module)
+  - The IO::Pty module (this one is not)
+  - The scm-test-tap test framework
+
+        https://github.com/ft/scm-test-tap
+
+The Perl code opens a serial device, that can be used to test guile-termios
+against. ‘scm-test-tap’ is a test framework that emits TAP output, so the test
+suite can be ran within a TAP harness (like Perl's ‘prove’ harness).
+
+If you do not have those dependencies installed, you can still run the old
+plausibility test:
+
+  % make plausibility
+
+The real test suite can be run without the plausibility test:
+
+  % make test-suite
+
+In fact, "make test" is a shortcut to run those two, one after another.

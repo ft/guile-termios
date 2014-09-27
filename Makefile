@@ -1,5 +1,8 @@
 CC = cc
 GUILE_BINARY = guile
+PERL_BINARY = perl
+HARNESS = prove
+TESTDRIVER = "/bin/sh ./test-driver"
 
 all: gps scheme/termios/system.scm
 
@@ -30,7 +33,12 @@ clean: clean-byte-compile
 install:
 	GUILE_BINARY="$(GUILE_BINARY)" sh ./install
 
-test:
+plausible:
 	sh ./tests/test-this-terminal.sh
 
-.PHONY: all clean clean-byte-compile compile install test
+test-suite:
+	$(HARNESS) --verbose --color --merge --exec $(TESTDRIVER) ./tests/*.t
+
+test: plausible test-suite
+
+.PHONY: all clean clean-byte-compile compile install plausible test-suite test

@@ -1,0 +1,134 @@
+#!/usr/bin/perl
+
+# Copyright (c) 2014 guile-termios workers, All rights reserved.
+#
+# Terms for redistribution and use can be found in LICENCE.
+
+# This script simulates a serial device. The script fires up a TTY, sets an
+# environment variable (GUILE_TERMIOS_TTY) and calls a specified guile-termios
+# program.
+#
+# perl ./test-device -g /usr/local/bin/guile \
+#                    -t ./tests/baudrate-tests-pl.t
+#
+# It waits for the child to finish and propagates the child's return value to
+# the calling environment.
+
+use strict;
+use warnings;
+use diagnostics;
+
+use English qw{ -no_match_vars };
+use POSIX qw{ :sys_wait_h
+              :termios_h };
+use IO::Pty;
+
+my (%cnf, $retval, $cpid, $pid);
+
+%cnf = (
+    guile => q{guile},
+    test => undef
+);
+
+do {
+    sub usage {
+        print q{
+ Usage: test-device [OPTION(s)]
+
+  --help, -h             Display this info message.
+  --guile, -g <BINARY>   Sets the guile executable.
+  --test, -t <SCRIPT>    Sets the name of the test script.
+
+};
+    }
+
+    use Getopt::Long;
+    my ($rc);
+
+    Getopt::Long::Configure(
+        'require_order', 'no_gnu_compat', 'auto_abbrev',
+        'no_ignore_case', 'bundling');
+
+    $rc = GetOptions ( "help|h" => sub { usage; exit 0 },
+                       "guile|g=s" => sub { $cnf{guile} = $_[1] },
+                       "test|t=s", => sub { $cnf{test} = $_[1] } );
+
+    if (not $rc or not defined $cnf{test} ) {
+        usage;
+        exit 1;
+    }
+};
+
+my ($fh, $dev, $pty);
+
+$dev = POSIX::Termios->new;
+$pty = IO::Pty->new;
+$fh = $pty->slave;
+
+print "# Connecting to device `" . $fh->ttyname . "'...\n";
+$ENV{GUILE_AUTO_COMPILE} = '0';
+$ENV{GUILE_TERMIOS_TTY} = $fh->ttyname;
+
+# Setup serial device...
+$dev->getattr(fileno($fh)) or die "Could not get attributes: $ERRNO\n";
+
+$dev->setispeed(B19200) or die "Could not set input speed: $ERRNO\n";
+$dev->setospeed(B19200) or die "Could not set output speed: $ERRNO\n";
+
+$dev->setcflag(($dev->getcflag
+                   | (CSIZE | PARENB | CS8 | CREAD | CLOCAL | HUPCL))
+                   & ~(IXON | IXOFF));
+
+$dev->setiflag($dev->getiflag
+                   | IGNBRK);
+
+$dev->setlflag($dev->getlflag
+                   & ~(ICANON | ECHO | ECHONL | ECHOK | ECHONL));
+
+$dev->setoflag($dev->getoflag
+                   & ~(OPOST));
+
+$dev->setcc(VMIN, 1);
+$dev->setcc(VTIME, 0);
+
+$dev->setattr(fileno($fh), TCSANOW) or die "Could not set attributes: $ERRNO\n";
+
+sub handle_sigchld {
+    my $p;
+    while (($p = waitpid(-1, &WNOHANG)) > 0) {
+        $retval = ${^CHILD_ERROR_NATIVE};
+        print "# -!- Child process exited: $p (return: $retval)\n";
+        close $fh;
+        exit ($retval > 0) ? 1 : 0;
+    }
+    $SIG{CHLD} = \&handle_sigchld;
+}
+
+$SIG{CHLD} = \&handle_sigchld;
+
+$retval = 0;
+
+if ($cpid = fork) {
+    print "# -!- Forked process: $cpid\n";
+} else {
+    my @guile_options = ( q{-s}, $cnf{test} );
+    exec { $cnf{guile} }  @guile_options;
+}
+
+while (my $input = <$pty>) {
+    # Drain input from serial device.
+    1;
+}
+
+# This should never be reached, but if it's all the same to you...
+
+if (($pid = wait) >= 0) {
+    $retval = ${^CHILD_ERROR_NATIVE};
+    print "# -!- Collecting child process $pid (return: $retval)\n";
+    if ($pid != $cpid) {
+        print "# -!- Warning: $cpid != $pid! (this shouldn't happen)\n";
+    }
+}
+
+close $fh;
+exit ($retval > 0) ? 1 : 0;

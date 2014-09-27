@@ -2,25 +2,25 @@
 
 (use-modules (test tap)
              (test termios)
-             (termios)
+             ((termios) #:prefix base:)
              (termios system))
 
 (define (add-base-test tty ts rate reset getter setter)
   (tap/comment "--- --- ---")
-  (define-test (format #f "base-test: ~a works (~a)"
+  (define-test (format #f "~a works (~a)"
                        (car setter)
                        (car rate))
-    (pass-if-false (termios-failure? ((cdr setter) ts (cdr rate)))))
-  (define-test (format #f "base-test: tc-set-attr works (~a)"
+    (pass-if-false (base:termios-failure? ((cdr setter) ts (cdr rate)))))
+  (define-test (format #f "base:tc-set-attr works (~a)"
                        (car rate))
-    (pass-if-false (termios-failure? (tc-set-attr tty ts))))
-  (define-test (format #f "base-test: ~a works (~a) [reset-step]"
+    (pass-if-false (base:termios-failure? (base:tc-set-attr tty ts))))
+  (define-test (format #f "~a works (~a) [reset-step]"
                        (car setter)
                        (car reset))
-    (pass-if-false (termios-failure? ((cdr setter) ts (cdr reset)))))
-  (define-test "base-test: tc-get-attr! works"
-    (pass-if-false (termios-failure? (tc-get-attr! tty ts))))
-  (define-test (format #f "base-test: ~a works (~a)"
+    (pass-if-false (base:termios-failure? ((cdr setter) ts (cdr reset)))))
+  (define-test "base:tc-get-attr! works"
+    (pass-if-false (base:termios-failure? (base:tc-get-attr! tty ts))))
+  (define-test (format #f "~a works (~a)"
                        (car getter)
                        (car rate))
     (pass-if-= (cdr rate) ((cdr getter) ts))))
@@ -30,35 +30,35 @@
 
   ;; Setup
   (let ((tty (open-device))
-        (ts (make-termios-struct)))
+        (ts (base:make-termios-struct)))
 
-    (define-test "Initial tc-get-attr! works"
-      (pass-if-false (termios-failure? (tc-get-attr! tty ts))))
+    (define-test "Initial base:tc-get-attr! works"
+      (pass-if-false (base:termios-failure? (base:tc-get-attr! tty ts))))
     (define-test "Default baudrate (19200bd) of test device detected"
-      (pass-if-= termios-B19200 (cf-get-ispeed ts)))
+      (pass-if-= termios-B19200 (base:cf-get-ispeed ts)))
 
     ;; Here's what we do, once drawn out in detail:
 
     (add-base-test tty ts
                    (name-value-pair termios-B115200)
                    (name-value-pair termios-B9600)
-                   (name-value-pair cf-get-ispeed)
-                   (name-value-pair cf-set-speed!))
+                   (name-value-pair base:cf-get-ispeed)
+                   (name-value-pair base:cf-set-speed!))
     (add-base-test tty ts
                    (name-value-pair termios-B300)
                    (name-value-pair termios-B9600)
-                   (name-value-pair cf-get-ispeed)
-                   (name-value-pair cf-set-speed!))
+                   (name-value-pair base:cf-get-ispeed)
+                   (name-value-pair base:cf-set-speed!))
     (add-base-test tty ts
                    (name-value-pair termios-B1200)
                    (name-value-pair termios-B9600)
-                   (name-value-pair cf-get-ispeed)
-                   (name-value-pair cf-set-ispeed!))
+                   (name-value-pair base:cf-get-ispeed)
+                   (name-value-pair base:cf-set-ispeed!))
     (add-base-test tty ts
                    (name-value-pair termios-B2400)
                    (name-value-pair termios-B9600)
-                   (name-value-pair cf-get-ospeed)
-                   (name-value-pair cf-set-ospeed!))
+                   (name-value-pair base:cf-get-ospeed)
+                   (name-value-pair base:cf-set-ospeed!))
 
 
     ;; Teardown

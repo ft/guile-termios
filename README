@@ -60,3 +60,15 @@ The real test suite can be run without the plausibility test:
   % make test-suite
 
 In fact, "make test" is a shortcut to run those two, one after another.
+
+If you need more verbose test-suite output, use either of these:
+
+  % make test-verbose
+  % make test-suite-verbose
+
+To run a single test-file in case of an error, you can use this:
+
+  % sh ./test-driver ./tests/baudrate.t
+
+...with the file of your choosing in place of ‘./tests/baudrate.t’,
+obviously.

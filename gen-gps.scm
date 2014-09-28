@@ -48,7 +48,6 @@
 
 (define gps-footer
   `(""
-    "    printf(\"\\n\");"
     "    return EXIT_SUCCESS;"
     "}"))
 

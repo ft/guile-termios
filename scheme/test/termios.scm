@@ -1,4 +1,5 @@
-;; Copyright (c) 2014 guile-termios workers, All rights reserved.
+;; Copyright (c) 2014 Frank Terbeck <ft@bewatermyfriend.org>
+;; All rights reserved.
 ;;
 ;; Terms for redistribution and use can be found in LICENCE.
 

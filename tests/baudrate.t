@@ -1,5 +1,8 @@
 ;; -*- scheme -*-
 
+;; Copyright (c) 2014 Frank Terbeck <ft@bewatermyfriend.org>
+;; All rights reserved.
+
 (use-modules (test tap)
              (test termios)
              ((termios) #:prefix base:)

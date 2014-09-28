@@ -8,8 +8,14 @@
 
 (use-modules (termios with-exceptions))
 
+(define name "test-this-terminal-2")
 (define tty (current-input-port))
 (define ts (make-termios-struct))
+
+(unless (isatty? tty)
+  (format #t "Skipping ~a: stdin is not a terminal.~%" name)
+  (quit 0))
+
 (tc-get-attr! tty ts)
 (write (parse-termios-struct ts))
 (newline)

@@ -11,10 +11,15 @@
 
 (use-modules (termios))
 
+(define name "test-this-terminal")
 (define tty (current-input-port))
 (define ts (make-termios-struct))
 
-(unless (= (tc-get-attr! tty ts) 0)
+(unless (isatty? tty)
+  (format #t "Skipping ~a: stdin is not a terminal.~%" name)
+  (quit 0))
+
+(when (termios-failure? (tc-get-attr! tty ts))
   (throw 'tc-get-attr!-failed))
 
 (write (parse-termios-struct ts))

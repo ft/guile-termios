@@ -39,6 +39,7 @@
                     (pass-if-= n (base:get-field-from-termios lst x))))
                 (set! n (+ 1 n)))
               termios-fields))
+  (tap/comment "--- --- ---")
   (let* ((ts (base:make-termios-struct))
          (lst (base:parse-termios-struct ts)))
     (define-test "get-field: non-existent field fails"

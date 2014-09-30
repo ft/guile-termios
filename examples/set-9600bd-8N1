@@ -72,7 +72,7 @@
 ;; Set the desired baud-rate.
 (cf-set-speed! ts termios-B9600)
 
-;; Finally, transfer the setup contained within ‘ts’ the the serial device and
+;; Finally, transfer the setup contained within ‘ts’ to the serial device and
 ;; close the port.
 (tc-set-attr tty ts)
 (close-port tty)

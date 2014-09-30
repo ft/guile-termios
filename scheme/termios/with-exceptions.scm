@@ -48,8 +48,8 @@
         (scm-error 'system-error
                    (symbol->string fnc)
                    "~s"
-                   (map strerror errno)
-                   errno))))
+                   (list (strerror errno))
+                   (list errno)))))
 
 (define-syntax defexcp
   (syntax-rules ()

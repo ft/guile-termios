@@ -55,9 +55,11 @@
   (syntax-rules ()
     ((_ fe be args ...)
      (define (fe args ...)
-       (let ((res (be args ...)))
-         (maybe-termios-error 'fe res)
-         res)))))
+       (call-with-blocked-asyncs
+        (lambda ()
+          (let ((res (be args ...)))
+            (maybe-termios-error 'fe res)
+            res)))))))
 
 (defexcp cf-set-ispeed! base:cf-set-ispeed! termios speed)
 (defexcp cf-set-ospeed! base:cf-set-ospeed! termios speed)
@@ -69,6 +71,9 @@
 (defexcp tc-send-break base:tc-send-break port duration)
 
 (define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
-  (let ((res (base:tc-set-attr port termios #:optional-action optional-action)))
-    (maybe-termios-error 'tc-set-attr res)
-    res))
+  (call-with-blocked-asyncs
+   (lambda ()
+     (let ((res (base:tc-set-attr port termios
+                                  #:optional-action optional-action)))
+       (maybe-termios-error 'tc-set-attr res)
+       res))))

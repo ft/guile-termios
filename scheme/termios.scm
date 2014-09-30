@@ -51,12 +51,46 @@
 
 (define libc (dynamic-link-w/system))
 
-(define errno (dynamic-pointer "errno" libc))
+(define-syntax-rule (maybe dynamic name lib-handle)
+  (catch #t
+    (lambda () (dynamic name lib-handle))
+    (lambda (k . a) #f)))
 
-(define (get-errno)
-  (if (null-pointer? errno)
-      (list 0)
-      (parse-c-struct errno (list errno-t))))
+(define errno-locations
+  '(("__errno_location" . function)     ; glibc
+    ("__errno" . function)              ; cygwin
+    ("errno" . variable)))              ; fallback
+
+(define errno (let loop ((loc errno-locations))
+                (cond ((null? loc) #f)
+                      ((eq? 'function (cdar loc))
+                       (let* ((name (caar loc))
+                              (func (maybe dynamic-func name libc)))
+                         (if func
+                             (list (pointer->procedure '* func '())
+                                   'function name)
+                             (loop (cdr loc)))))
+                      (else
+                       (let* ((name (caar loc))
+                              (ptr (maybe dynamic-pointer name libc)))
+                         (if ptr
+                             (list ptr 'variable name)
+                             (loop (cdr loc))))))))
+
+(define get-errno
+  (if errno
+      (if (eq? 'function (cadr errno))
+          (lambda ()
+            (let* ((func (car errno))
+                   (raw (func)))
+              (if (null-pointer? raw)
+                  0
+                  (car (parse-c-struct raw (list errno-t))))))
+          (if (null-pointer? (car errno))
+              (lambda () 0)
+              (lambda () (car (parse-c-struct (car errno)
+                                              (list errno-t))))))
+      (lambda () 0)))
 
 (define (termios-failure? result)
   (< result 0))

@@ -26,6 +26,22 @@
 ;; Get the current setings of the serial-device.
 (tc-get-attr! tty ts)
 
+;; Setting the desired mode is a matter of maniplulating the data-structure in
+;; ‘ts’. To do that, ‘parse-termios-struct’ provides a way to read it into a
+;; scheme data-structure, from which fields can be extracted by use of
+;; ‘get-field-from-termios’ and into which fields can be written by use of
+;; ‘put-field-into-termios!’. A modified scheme structure can by put back into
+;; C land by using ‘make-termios-struct’ with the modified structure as an
+;; argument.
+;;
+;; The first few expressions that follow will demonstrate this procedure to
+;; unset the PARENB bit in the datastructure.
+;;
+;; That is obviously not the only bit that needs changing for 8N1 mode. But
+;; there's a shortcut, that get the deed done way quicker. And in actual code,
+;; you'd never manipulate the the structure yourself to set this particular
+;; mode. That shortcut is pursued after the manual demonstration is done.
+
 ;; Helper procedure to unset a set of bits in a word.
 (define (logunset word bitmask)
   (logand word (logxor word bitmask)))
@@ -46,7 +62,7 @@
   ;; And put the structure back into the land of C.
   (set! ts (make-termios-struct ts-scm)))
 
-;; Let's take a short-cut now: Raw mode disables all special treatment of any
+;; Let's take the short-cut now: Raw mode disables all special treatment of any
 ;; characters, and also sets the protocol to only one stop-bit and 8 data bits
 ;; and it also disables parity bit generation (which we did manually before for
 ;; demonstration purposes). So, that's pretty much 8N1 for us with no effort at

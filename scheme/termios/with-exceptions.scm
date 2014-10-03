@@ -42,24 +42,19 @@
 ;; In the case of failure, error-reporting is done via POSIX's ‘errno’
 ;; facility.
 
-(define (maybe-termios-error fnc res)
-  (if (base:termios-failure? res)
-      (let ((errno (base:get-errno)))
-        (scm-error 'system-error
-                   (symbol->string fnc)
-                   "~s"
-                   (list (strerror errno))
-                   (list errno)))))
+(define (termios-error fnc errno)
+  (scm-error 'system-error
+             (symbol->string fnc)
+             "~s"
+             (list (strerror errno))
+             (list errno)))
 
 (define-syntax defexcp
   (syntax-rules ()
     ((_ fe be args ...)
      (define (fe args ...)
-       (call-with-blocked-asyncs
-        (lambda ()
-          (let ((res (be args ...)))
-            (maybe-termios-error 'fe res)
-            res)))))))
+       (base:call-with-errno (errno (be args ...))
+         (termios-error 'fe errno))))))
 
 (defexcp cf-set-ispeed! base:cf-set-ispeed! termios speed)
 (defexcp cf-set-ospeed! base:cf-set-ospeed! termios speed)
@@ -71,9 +66,7 @@
 (defexcp tc-send-break base:tc-send-break port duration)
 
 (define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
-  (call-with-blocked-asyncs
-   (lambda ()
-     (let ((res (base:tc-set-attr port termios
-                                  #:optional-action optional-action)))
-       (maybe-termios-error 'tc-set-attr res)
-       res))))
+  (base:call-with-errno (errno (base:tc-set-attr port termios
+                                                 #:optional-action
+                                                 optional-action))
+    (termios-error errno)))

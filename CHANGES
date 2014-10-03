@@ -1,0 +1,23 @@
+ User-visible changes in guile-termios
+=======================================
+
+* 0.2 → 0.3 (released 2014-10-03):
+
+  - Cygwin support
+
+    This requires Guile 2 in cygwin, which at the time of writing does not
+    exist as a pre-built package. If all dependencies are installed, though,
+    Guile 2.0 builds fine.
+
+  - Added ‘termios-failure?’
+
+  - Added access to ‘errno’
+
+    - get-errno
+    - call-with-errno
+
+  - Added high-level module (termios with-exceptions)
+
+  - Added an actual test-suite (on top of the general plausibility test
+
+  - Licence switched to 2-clause BSD.

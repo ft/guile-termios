@@ -1,0 +1,117 @@
+;; -*- scheme -*-
+
+(use-modules (ice-9 ftw)
+             (ice-9 optargs)
+             (srfi srfi-1))
+
+;; Set this to #t to disable and actual file-system changes!
+(define install-debug #f)
+
+(define (file-exists? name)
+  "Return #t if a file (of any kind) named NAME exist."
+  (access? name F_OK))
+
+(define (is-directory? dir)
+  "Return #t if an existing file named DIR is a directory."
+  (eq? 'directory
+       (stat:type (stat dir))))
+
+(define (split-file-name name)
+  "Split a file name in to a list:
+
+  (split-file-name \"/foo/bar/baz\") => (\"foo\" \"bar\" \"baz\")"
+  (filter (lambda (x) (not (or (string=? x ".")
+                               (string=? x ""))))
+          (string-split name #\/)))
+
+(define (ensure-directory dir mode)
+  "Make sure a directory named DIR exists.
+
+If directories need to be created for that to be true, use MODE as the access
+mode for these new directories. Should any part of the directory be an existing
+file that is not a directory, the procedure errors out."
+  (fold (lambda (x acc)
+          (let ((cur (string-concatenate (list acc "/" x))))
+            (cond ((not (file-exists? cur))
+                   (if install-debug
+                       (format #t "  ..mkdir ~o ~s~%" mode cur)
+                       (mkdir cur mode)))
+                  ((not (is-directory? cur))
+                   (error "File exists, but is not a directory: ~s~%" cur))
+                  (else #f))
+            cur))
+        ""
+        (split-file-name dir)))
+
+(define* (install-file src dest
+                       #:key
+                       (destination-directory (%site-dir))
+                       (file-mode #o644)
+                       (directory-mode #o755))
+  "Install SRC as DEST into DESTINATION-DIRECTORY with mode FILE-MODE.
+
+Should any directories need to be created for performing the file-copy, the
+mode for these directories will be DIRECTORY-MODE. FILE-MODE, DIRECTORY-MODE
+and DESTINATION-DIRECTORY are keyword-arguments with these respective default
+values: #o644, #o755 and the return-value of (%site-dir)."
+  (let* ((destfile (string-concatenate (list destination-directory "/" dest)))
+         (full-dest-dir (dirname destfile)))
+    (unless (and (file-exists? full-dest-dir)
+                 (is-directory? full-dest-dir))
+      (if install-debug
+          (format #t "mkdir -p ~s~%" full-dest-dir))
+      (ensure-directory full-dest-dir directory-mode))
+    (format #t "cp ~s ~s~%" src destfile)
+    (unless install-debug
+      (copy-file src destfile))
+    (format #t "chmod ~o ~s~%" file-mode destfile)
+    (unless install-debug
+      (chmod destfile file-mode))))
+
+(define (install-scheme src dest)
+  "Handle installation of the scheme subdirectory.
+
+*.scm goes to (%site-dir) and *.go goes to (%site-ccache-dir) while
+maintaining the relative sub-directory structure."
+  (cond ((string-suffix? ".go" src 0)
+         (install-file src dest #:destination-directory (%site-ccache-dir)))
+        ((string-suffix? ".scm" src 0)
+         (install-file src dest))
+        (else #f)))
+
+(define (strip-root fname)
+  "Remove the root-directory part of a file name FNAME. This also cleans up
+occurances of \"./\" or multiple slashes in the file name:
+
+  foo/bar/baz    => bar/baz
+  ./foo/bar/baz  => bar/baz
+  ../foo/bar/baz => foo/bar/baz
+  foo//bar/baz   => bar/baz
+  foo/./bar/baz  => bar/baz"
+  (let* ((lst (split-file-name fname)))
+    (string-join (cdr lst) "/")))
+
+(define* (foreach-file-in dir proc #:key (exclude '()))
+  "Run a procedure PROC for each regular file in a directory named DIR.
+
+PROC is called with two arguments: The file name and the file name with its
+root part stripped of. For example, if DIR is \"foo\" a call of PROC may look
+like this:
+
+  (PROC \"foo/bar/baz\" \"bar/baz\")"
+  (define (nop name stat result) 0)
+  (file-system-fold (lambda (name stat result) ;; enter?
+                      (not (member (basename name) exclude)))
+                    (lambda (name stat result) ;; leaf
+                      (when (eq? (stat:type stat) 'regular)
+                        (proc name (strip-root name)))
+                      0)
+                    nop nop nop  ;; down, up and skip
+                    (lambda (name stat errno result)
+                      (format #t "warning: ~s: ~a~%" name (strerror errno))
+                      0)
+                    0
+                    dir))
+
+(foreach-file-in "scheme" install-scheme
+                 #:exclude '(".git" "test"))

@@ -1,59 +1,6 @@
 #!/bin/sh
 
-GUILE_BINARY=${GUILE_BINARY:-guile}
+GUILE_AUTO_COMPILE=0
+export GUILE_AUTO_COMPILE
 
-SITE_DIR=$("$GUILE_BINARY" -c '(format #t "~a" (%site-dir))')
-if [ x"$SITE_DIR" = x ]; then
-    printf 'Failed to find site dir!\n'
-    exit 1
-fi
-
-if [ -e scheme/termios.go ]; then
-    SITE_COMPILED_DIR=$("$GUILE_BINARY" -c '(format #t "~a" (%site-ccache-dir))')
-    if [ x"$SITE_COMPILED_DIR" = x ]; then
-        printf 'Failed to find compiled dir!\n'
-        exit 1
-    fi
-fi
-
-create_site_dir () {
-    if [ ! -d "$SITE_DIR$1" ]; then
-        printf 'Creating site dir: `%s'\''\n' "$SITE_DIR$1"
-        install -m0755 -d "$SITE_DIR$1" || exit 1
-    fi
-}
-
-create_compiled_dir () {
-    if [ -e scheme/termios.go ] && [ ! -d "$SITE_COMPILED_DIR$1" ]; then
-        printf 'Creating compiled site dir: `%s'\''\n' "$SITE_COMPILED_DIR$1"
-        install -m0755 -d "$SITE_COMPILED_DIR$1" || exit 1
-    fi
-}
-
-install_src_file () {
-    (set -x
-     install -m0644 "$1" "$SITE_DIR$2";) || exit 1
-}
-
-install_compiled_file () {
-    if [ -e "$1" ]; then
-        (set -x
-         install -m0644 "$1" "$SITE_COMPILED_DIR$2";) || exit 1
-    fi
-}
-
-create_site_dir
-create_site_dir "/termios"
-
-create_compiled_dir
-create_compiled_dir "/termios"
-
-install_src_file scheme/termios.scm
-install_src_file scheme/termios/system.scm "/termios"
-install_src_file scheme/termios/with-exceptions.scm "/termios"
-
-install_compiled_file scheme/termios.go
-install_compiled_file scheme/termios/system.go "/termios"
-install_compiled_file scheme/termios/with-exceptions.go "/termios"
-
-exit 0
+exec ${GUILE_BINARY:-guile} -s install-scheme

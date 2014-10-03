@@ -51,10 +51,46 @@
 
 (define libc (dynamic-link-w/system))
 
+;; ‘errno’ handling:
+;;
+;; Most termios procedures in the C library set the ‘errno’ variable in case of
+;; errors to point to the right diagnostic for the underlying problem. At this
+;; point, Guile's dynamic FFI does not provide portable access to that value:
+;;
+;;   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=18592
+;;
+;; The following implements a procedure ‘get-errno’, that returns the current
+;; value of ‘errno’. The naïve thing to do would be:
+;;
+;;   (tc-drain prt)
+;;   (get-errno)
+;;
+;; The issue with this is, that Guile's runtime might run some functionality
+;; that touches errno in between those two calls. On IRC, Ludovic Courtès
+;; mentions the use of ‘call-with-blocked-asyncs’ circumvent this.
+
 (define-syntax-rule (maybe dynamic name lib-handle)
   (catch #t
     (lambda () (dynamic name lib-handle))
     (lambda (k . a) #f)))
+
+;; The ‘errno’ value in this module looks like this:
+;;
+;; (<pointer> <type> <name>)
+;;
+;; or #f in case no suitable pointer could be found.
+;;
+;; <type> is either ‘function’ or ‘variable’. <name> is a string: The name of
+;; the symbol in the C library to lookup.
+;;
+;; Why would there be functions? Well, some C libraries have per-thread values
+;; for ‘errno’ and the functions return a pointer to the location of the value
+;; for the particular thread. Thus ‘errno’ is defined like this:
+;;
+;;   #define errno (*__errno())
+;;
+;; This code supports these kinds of functions and falls back to a raw ‘errno’
+;; value in case no such function could be found.
 
 (define errno-locations
   '(("__errno_location" . function)     ; glibc
@@ -76,6 +112,15 @@
                          (if ptr
                              (list ptr 'variable name)
                              (loop (cdr loc))))))))
+
+;; In case ‘errno’ is #f, something went horribly wrong. In that case
+;; ‘get-errno’ always returns 0, because the real errno value could not be
+;; retrieved. The same is true, if the location that was indicated by the C
+;; library is the NULL pointer. Otherwise the location is parsed using
+;; ‘parse-c-struct’ with a single entry: ‘errno-t’
+;;
+;; ‘errno-t’ is determined upon module generation. It's actual type can be
+;; found in (termios system).
 
 (define get-errno
   (if errno

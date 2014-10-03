@@ -4,6 +4,7 @@
 ;; Terms for redistribution and use can be found in LICENCE.
 
 (define-module (termios)
+  #:use-module (srfi srfi-11)
   #:use-module (ice-9 optargs)
   #:use-module (system foreign)
   #:use-module (termios system)
@@ -27,6 +28,7 @@
             tc-flush
             tc-send-break
 
+            call-with-errno
             get-errno
             termios-failure?
             termios-version))
@@ -136,6 +138,33 @@
               (lambda () (car (parse-c-struct (car errno)
                                               (list errno-t))))))
       (lambda () 0)))
+
+;; To deal with ‘call-with-blocked-asyncs’ easier, here is a bit of syntactic
+;; sugar:
+;;
+;;   ...
+;;   (define tty "/dev/ttyUSB0")
+;;   (define prt (open-io-file tty))
+;;   (define ta (make-termios-struct)
+;;   (call-with-errno (errno (tc-get-attr! prt ts))
+;;     (strerror errno)
+;;     (close prt)
+;;     (quit EXIT_FAILURE))
+;;   ...
+;;
+;; It's like a ‘let’ with only one value, where the expressions in the body are
+;; called only of the expression setting the value failed. In case it didn't
+;; fail the whole expression returns #t.
+
+(define-syntax-rule (call-with-errno (errno exp) fail0 fail1 ...)
+  (let-values (((failed? errno) (call-with-blocked-asyncs
+                                 (lambda ()
+                                   (let* ((f? (termios-failure? exp))
+                                          (err (if f? (get-errno) 0)))
+                                     (values f? err))))))
+    (if failed?
+        (begin fail0 fail1 ...)
+        #t)))
 
 (define (termios-failure? result)
   (< result 0))

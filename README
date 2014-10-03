@@ -19,7 +19,14 @@ To get this working anyway, this module does this:
 
 
 This module was so far only tested on Debian Linux with GNU libc using GNU
-Guile 2.0.9.
+Guile 2.0.9, and partially on 64-bit cygwin with Microsoft Windows 7 as the
+host OS.
+
+Requirements (excluding the test-suite):
+
+  - Guile 2.0
+  - A C compiler
+  - A POSIX shell as /bin/sh
 
 To generate, byte-compile, test and install the module, use these steps:
 

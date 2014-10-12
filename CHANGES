@@ -1,6 +1,16 @@
  User-visible changes in guile-termios
 =======================================
 
+* 0.3 → 0.4
+
+  - Added a reference manual, finally.
+
+  - Optional key argument of ‘tc-set-attr’ changed from #:optional-action
+    to #:key. Strictly speaking, this is an API change, but since this
+    optional parameter was never documented, I won't bother bumping
+    major versions.
+
+
 * 0.2 → 0.3 (released 2014-10-03):
 
   - Cygwin support

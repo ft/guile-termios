@@ -1,0 +1,425 @@
+.TH "guile-termios" "3" "Oct, 2014" "" ""
+.SH NAME
+.PP
+\f[C]guile\-termios\f[] \- POSIX Termios interface for GNU Guile Scheme
+.SH SYNOPSIS
+.IP
+.nf
+\f[C]
+;;\ The\ basic\ interface:
+(use\-modules\ (termios))
+;;\ A\ similar\ interface,\ that\ throws\ exceptions\ in
+;;\ case\ of\ errors\ from\ the\ C\ library\ procedures:
+(use\-modules\ (termios\ with\-exceptions))
+;;\ System\ dependent\ constants\ and\ structures:
+(use\-modules\ (termios\ system))
+
+;;\ Sample\ code:
+(define\ tty\ (open\-io\-file\ "/dev/ttyUSB0"))
+(define\ ts\ (make\-termios\-struct))
+(tc\-get\-attr!\ tty\ ts)
+(cf\-make\-raw!\ ts)
+(tc\-set\-attr\ tty\ ts)
+(close\-port\ tty)
+\f[]
+.fi
+.SH DESCRIPTION
+.PP
+To query and change settings of serial devices on POSIX systems, the
+termios API is used.
+This module implements access to these POSIX functionality for GNU Guile
+scheme by use of its dynamic foreign function interface.
+.PP
+In order to do this, the module provides conversion between
+\f[C]struct\ termios\f[] instances from C land to a corresponding Scheme
+structure and utilities to work with said Scheme structure.
+.PP
+In order to improve portability (the way termios is implemented differs
+from system to system) the module uses a helper program implemented in C
+during build time to generate the contents of the
+\f[C](termios\ system)\f[] module.
+Most importantly, this module contains termios constants such as
+\f[C]B9600\f[].
+The module actually prefixes all constants derived from
+\f[C]#defines\f[] by \f[C]termios\-\f[], so that example constant is
+actually available as \f[C]termios\-B9600\f[].
+.PP
+The library offers two interfaces: \f[C](termios)\f[] and
+\f[C](termios\ with\-exceptions)\f[].
+The latter offers the same access as the former, but automatically
+raises errors when one of the C\-library procedures signals failure.
+.PP
+This manual describes version \f[C]0.4\f[] of the guile\-termios
+library.
+.PP
+.SH API
+.PP
+The described API is offered by both \f[C](termios)\f[] and
+\f[C](termios\ with\-exceptions)\f[], almost completely.
+See the \f[I]\[lq]The (termios with\-exceptions) module\[rq]\f[] section
+below for details about the differences.
+.SS \f[C]struct\ termios\f[] Handling
+.TP
+.B \f[C](make\-termios\-struct\ [scheme\-structure])\f[]
+Return a \f[C]struct\ termios\f[] instance.
+If \f[I]scheme\-structure\f[] is provides, use it to determine the
+contents of the instance.
+If it is not provided, the instance is filled with zeroed out values.
+.RS
+.RE
+.TP
+.B \f[C](parse\-termios\-struct\ termios\-struct)\f[]
+Take a \f[C]struct\ termios\f[] instance from C\-land and return a
+corresponding Scheme structure.
+You should \f[I]not\f[] modify that structure manually, but rather use
+the \f[C]get\-field\-from\-termios\f[] and
+\f[C]put\-field\-into\-termios!\f[] API functions.
+.RS
+.RE
+.TP
+.B \f[C](get\-field\-from\-termios\ scm\ field)\f[]
+Extract \f[C]field\f[] from \f[C]scm\f[] (the Scheme structure
+corresponding to a \f[C]struct\ termios\f[] instance).
+Valid fields are actually all fields of \f[C]struct\ termios\f[] from
+\f[C]termios.h\f[]; but you should probably only modify
+\f[I]c\-cflag\f[], \f[I]c\-iflag\f[] \f[I]c\-lflag\f[] and
+\f[I]c\-oflag\f[] unless you really know what you are doing.
+See \f[I]termios(3)\f[] for details about the structure's fields and
+their values.
+.RS
+.RE
+.TP
+.B \f[C](put\-field\-into\-termios!\ scm\ field\ value)\f[]
+Put \f[C]value\f[] into \f[C]field\f[] of \f[C]scm\f[] (the Scheme
+structure corresponding to a \f[C]struct\ termios\f[] instance).
+See \f[C]get\-field\-from\-termios\f[] about possible fields and their
+values.
+.RS
+.RE
+.SS The \f[C](termios)\f[] module
+.PP
+All of these procedures work on \f[C]struct\ termios\f[] instances from
+C\-land, since they wrap the corresponding C\-library procedures.
+This reference uses \f[C]ts\f[] for these parameters.
+Also instead of working with file\-discriptor integers, like the
+C\-library does, the Scheme interface uses \f[I]ports\f[], which is the
+standard file access interface in GNU Guile Scheme.
+Parameters of this kind are referenced as \f[C]port\f[].
+.PP
+The C\-library procedures signal errors via return values and offers
+diagnostic information via the POSIX \f[C]errno\f[] mechanism.
+Currently, GNU Guile's dynamic FFI does not feature portable access to
+that value.
+Therefore, this module offers access to \f[C]errno\f[] in order to
+enable useful diagnostics.
+See the \f[I]\[lq]Access to errno\[rq]\f[] section below for details.
+.TP
+.B \f[C]termios\-version\f[]
+This is a string constant, that describes the version of the guile
+termios module.
+.RS
+.RE
+.TP
+.B \f[C](termios\-failure?\ int)\f[]
+Returns either \f[C]#t\f[] or \f[C]#f\f[], depending on whether or not
+\f[C]int\f[] signals an error returned by one of the C\-library
+procedures wrapped by the module's API.
+All values returned by procedures marked as \f[B]<failure?>\f[] may be
+tested using this function.
+.RS
+.RE
+.TP
+.B \f[C](tc\-get\-attr!\ port\ ts)\f[] \f[B]<failure?>\f[]
+Get the current attributes from the serial device referenced by
+\f[C]port\f[] and save the retrieved values to \f[C]ts\f[].
+\f[I]This procedure wraps the\f[] \f[C]tcgetattr\f[] \f[I]procedure from
+the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](tc\-set\-attr\ port\ ts\ [#:when\ action])\f[] \f[B]<failure?>\f[]
+Take the termial attributs from \f[C]ts\f[] and apply them to the serial
+device referenced by \f[C]port\f[].
+The \f[C]action\f[] parameter defines when this action is to take place;
+it defaults to \f[C]termios\-TCSANOW\f[] (see \f[I]termios(3)\f[] for
+details).
+\f[I]This procedure wraps the\f[] \f[C]tcsetattr\f[] \f[I]procedure from
+the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](tc\-drain\ port)\f[] \f[B]<failure?>\f[]
+\f[C]tc\-drain\f[] waits until all output written to the serial device
+referenced by \f[C]port\f[] has been transmitted.
+\f[I]This procedure wraps the\f[] \f[C]tcdrain\f[] \f[I]procedure from
+the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](tc\-flow\ port\ action)\f[] \f[B]<failure?>\f[]
+Depending on the value of \f[C]action\f[] (see \f[I]termios(3)\f[] for
+details), this suspends the transmission or reception of data to or from
+the serial device referenced by \f[C]port\f[].
+\f[I]This procedure wraps the\f[] \f[C]tcflow\f[] \f[I]procedure from
+the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](tc\-flush\ port\ queue\-selector)\f[] \f[B]<failure?>\f[]
+\f[C]tc\-flush\f[] discards data written to the serial device referenced
+by \f[C]port\f[] but not transmitted, or data received but not read,
+depending on the value of \f[C]queue\-selector\f[].
+See \f[I]termios(3)\f[] for details.
+\f[I]This procedure wraps the\f[] \f[C]tcflush\f[] \f[I]procedure from
+the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](tc\-send\-break\ port\ duration)\f[] \f[B]<failure?>\f[]
+\f[C]tc\-send\-break\f[] transmits a continuous stream of zero bits for
+a specified \f[C]duration\f[], if the device referenced by \f[C]port\f[]
+is an asynchronous serial device.
+For details about the \f[C]duration\f[] parameter see
+\f[I]termios(3)\f[].
+\f[I]This procedure wraps the\f[] \f[C]tcsendbreak\f[] \f[I]procedure
+from the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](cf\-make\-raw!\ ts)\f[] \f[B]<void>\f[]
+Sets the attributs in \f[C]ts\f[] to a \[lq]raw\[rq] mode.
+\f[I]This procedure wraps the\f[] \f[C]cfmakeraw\f[] \f[I]procedure from
+the C\-library.\f[] That procedure is an extension to the POSIX
+standard.
+If the procedure is not available, the module provides a fallback using
+the \f[C]cfmakeraw\-fallback\f[] function.
+For that reason \f[C]cf\-make\-raw!\f[] is implemented as a module.
+.RS
+.RE
+.TP
+.B \f[C](cf\-get\-ispeed\ ts)\f[] \f[B]<baudrate>\f[]
+Extract the incoming speed value from \f[C]ts\f[].
+This value is one of the \f[C]B*\f[] constants from the
+\f[I]termios.h\f[] header file.
+\f[I]This procedure wraps the\f[] \f[C]cfgetispeed\f[] \f[I]procedure
+from the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](cf\-get\-ospeed\ ts)\f[] \f[B]<baudrate>\f[]
+Extract the outgoing speed value from \f[C]ts\f[].
+This value is one of the \f[C]B*\f[] constants from the
+\f[I]termios.h\f[] header file.
+\f[I]This procedure wraps the\f[] \f[C]cfgetospeed\f[] \f[I]procedure
+from the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](cf\-set\-ispeed\ ts\ speed)\f[] \f[B]<failure?>\f[]
+Set the incoming speed value in \f[C]ts\f[] to \f[C]speed\f[].
+This value is one of the \f[C]B*\f[] constants from the
+\f[I]termios.h\f[] header file.
+\f[I]This procedure wraps the\f[] \f[C]cfsetispeed\f[] \f[I]procedure
+from the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](cf\-set\-ospeed\ ts\ speed)\f[] \f[B]<failure?>\f[]
+Set the outgoing speed value in \f[C]ts\f[] to \f[C]speed\f[].
+This value is one of the \f[C]B*\f[] constants from the
+\f[I]termios.h\f[] header file.
+\f[I]This procedure wraps the\f[] \f[C]cfsetospeed\f[] \f[I]procedure
+from the C\-library.\f[]
+.RS
+.RE
+.TP
+.B \f[C](cf\-set\-speed\ ts\ speed)\f[] \f[B]<failure?>\f[]
+Set both the incoming and the outgoing speed in \f[C]ts\f[] to
+\f[C]speed\f[].
+\f[I]This procedure wraps the\f[] \f[C]tcsetattr\f[] \f[I]procedure from
+the C\-library.\f[] That procedure is an extension to the POSIX
+standard.
+If it is not available in the C\-library, the module provides a fallback
+implemented using \f[C]cf\-set\-ispeed\f[] and \f[C]cf\-set\-ospeed\f[].
+.RS
+.RE
+.SS Access to \f[C]errno\f[]
+.PP
+\f[C]errno\f[] is an integer value that refers to a reason for
+C\-library procedure to fail.
+It is significant when the library function's return value signals that
+an error has happened.
+The way \f[C]errno\f[] is implemented differs from system to system,
+since some systems implement per\-thread errno locations, which is
+usually achieved by a C preprocessor macro along the lines of this:
+.IP
+.nf
+\f[C]
+#define\ errno\ (*__errno())
+\f[]
+.fi
+.PP
+This library implements the following procedure to implement access to
+\f[C]errno\f[]:
+.TP
+.B \f[C](get\-errno)\f[]
+Return the current value of \f[C]errno\f[].
+.RS
+.RE
+.PP
+This is to be used right after the return value of one of the termios
+procedures was examined (\f[I]do\f[] \f[B]not\f[] \f[I]do it like
+this!\f[]):
+.IP
+.nf
+\f[C]
+(if\ (termios\-failure?\ (tc\-drain\ port))
+\ \ \ \ (let\ ((errno\ (get\-errno)))
+\ \ \ \ \ \ ...))
+\f[]
+.fi
+.PP
+The problem with this is, that Guile's runtime may run C\-library
+procedures that touch \f[C]errno\f[] in between the \f[C]tc\-drain\f[]
+and \f[C]get\-errno\f[] calls.
+To avoid this, \f[C]call\-with\-blocked\-asyncs\f[] should be used.
+In order to ease the use of this, the \f[C](termios)\f[] module offers a
+\f[C](call\-with\-errno\ ...)\f[] form:
+.TP
+.B \f[C](call\-with\-errno\ (var\ expression)\ fail\-expressions\ ...)\f[]
+This form evaluates \f[C]expression\f[] and stores the return value in a
+variable named \f[C]var\f[] for later reference.
+In case \f[C](termios\-failure?\ var)\f[] returns \f[C]#t\f[], the
+expressions in the form's body are evaluated, with the value of the last
+expression being the return value of the \f[C]call\-with\-errno\f[]
+form.
+In case \f[C]var\f[] did not signal an error, the form evaluates to
+\f[C]#t\f[].
+.RS
+.RE
+.PP
+The \f[I]\[lq]Examples\[rq]\f[] section below features an example of how
+to use \f[C]call\-with\-errno\f[].
+.SS The \f[C](termios\ with\-exceptions)\f[] module
+.PP
+This module offers another approach to the same POSIX functionality as
+the \f[C](termios)\f[] module does.
+The difference being, that when any of the procedures that may fail
+signal failure, this module raises an error.
+Possible exceptions, raised by this modules are:
+.TP
+.B \f[C]termios/no\-such\-field\f[]
+Raised by field accessors for the Scheme representation of
+\f[C]struct\ termios\f[] instances (that means either
+\f[C]get\-field\-from\-termios\f[] or
+\f[C]put\-field\-into\-termios!\f[]) in case the supplied \f[C]field\f[]
+parameter is \f[I]not\f[] a valid field name within the termios
+structure.
+.RS
+.RE
+.TP
+.B \f[C]system\-error\f[]
+Raised by any of the termios procedures, that may fail in case of an
+actual failure.
+The error\-handling of the procedures of this module properly access
+\f[C]errno\f[] using \f[C]call\-with\-errno\f[] and offer the raw value
+as well as a human readable string (retrieved via \f[C]strerror\f[]) as
+arguments to the exception.
+.RS
+.RE
+.PP
+The API of the \f[C](termios\ with\-exceptions)\f[] module otherwise
+exactly matches the one of the basic \f[C](termios)\f[] module, except
+that it \f[I]does\f[] \f[I]not\f[] export the \f[C]errno\f[] access API,
+since the error handling of the module takes care of that for the user
+already.
+.SH EXAMPLES
+.PP
+In the first example, let's open a serial device and set it to
+\f[C]9600bd\ 8N1\f[] mode.
+The example uses the \f[C](termios\ with\-exceptions)\f[] module, which
+means that any failure would cause the script to error out
+automatically:
+.IP
+.nf
+\f[C]
+(use\-modules\ (termios\ with\-exceptions)
+\ \ \ \ \ \ \ \ \ \ \ \ \ (termios\ system))
+(define\ tty\ (open\-io\-file\ "/dev/ttyUSB0"))
+(define\ ts\ (make\-termios\-struct))
+(tc\-get\-attr!\ tty\ ts)
+(cf\-make\-raw!\ ts)
+(cf\-set\-speed\ ts\ termios\-B9600)
+(tc\-set\-attr\ tty\ ts)
+(close\-port\ tty)
+\f[]
+.fi
+.PP
+To show how to access fields in \f[C]struct\ termios\f[] instances from
+Scheme, let's set the \f[C]ECHO\f[] bit in the \f[C]c\-lflag\f[] field
+(remember that constants are named \f[C]termios\-*\f[] in
+\f[C](termios\ system)\f[], which means that \f[C]ECHO\f[] from the C
+library header file is available as \f[C]termios\-ECHO\f[]):
+.IP
+.nf
+\f[C]
+(define\ tty\ "/dev/ttyUSB0")
+(define\ prt\ (open\-io\-file\ tty))
+(define\ ts\ (make\-termios\-struct)
+(tc\-get\-attr!\ tty\ ts)
+(let*\ ((ts\-scm\ (parse\-termios\-struct\ ts))
+\ \ \ \ \ \ \ (lflag\ (get\-field\-from\-termios\ ts\-scm\ \[aq]c\-lflag))
+\ \ \ \ \ \ \ (new\-value\ (logior\ lflag\ termios\-ECHO)))
+\ \ (put\-field\-into\-termios!\ ts\-scm\ \[aq]c\-lflag\ new\-value)
+\ \ (tc\-set\-attr\ tty\ (make\-termios\-struct\ new\-value)))
+\f[]
+.fi
+.PP
+Finally, here is an example of how to use \f[C]call\-with\-errno\f[] to
+properly access the value of \f[C]errno\f[] by the use of
+\f[C]call\-with\-blocked\-asyncs\f[]:
+.IP
+.nf
+\f[C]
+(define\ tty\ "/dev/ttyUSB0")
+(define\ prt\ (open\-io\-file\ tty))
+(define\ ts\ (make\-termios\-struct)
+(call\-with\-errno\ (errno\ (tc\-get\-attr!\ port\ ts))
+\ \ (strerror\ errno)
+\ \ (close\ port)
+\ \ (quit\ EXIT_FAILURE))
+\f[]
+.fi
+.SH SEE ALSO
+.PP
+\f[I]termios(3)\f[], \f[I]termios.h(7)\f[], \f[I]errno(3)\f[],
+\f[I]errno.h(7)\f[], \f[I]guile(1)\f[] and the \f[I]Guile Reference
+Manual\f[]
+.PP
+.SH COPYRIGHT
+.PP
+Copyright (c) 2014 \f[C]Frank\ Terbeck\ <ft\@bewatermyfriend.org>\f[],
+All rights reserved.
+.PP
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+.IP "1." 3
+Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+.IP "2." 3
+Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+.PP
+THIS SOFTWARE IS PROVIDED \[lq]AS IS\[rq] AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS OF THE PROJECT BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGE.

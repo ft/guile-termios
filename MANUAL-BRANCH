@@ -1,0 +1,14 @@
+    The ‘manual’ branch of guile-termios
+  ----------------------------------------
+
+This branch contains pre-built versions of the library's reference manual, for
+each release of the library, in order to remove the need to have the relatively
+heavy dependency on ‘pandoc’ and a ‘latex’ distribution from the project.
+
+This branch contains:
+
+  - doc/guile-termios.3 - Unix manpage
+  - doc/guile-termios.html - HTML Markup with included CSS
+  - doc/guile-termios.pdf - Portable Document Format
+
+Current version: v0.4

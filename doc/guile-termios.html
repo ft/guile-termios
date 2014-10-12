@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { font-weight: bold; }
+code > span.dt { text-decoration: underline; }
+code > span.co { font-style: italic; }
+code > span.al { font-weight: bold; }
+code > span.er { font-weight: bold; }
+  </style>
+  <link href="data:text/css,body%20%7B%0A%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20padding%2Dright%3A%201em%3B%0A%20%20%20%20padding%2Dleft%3A%201em%3B%0A%20%20%20%20max%2Dwidth%3A%2056em%3B%0A%20%20%20%20border%2Dleft%3A%201px%20solid%20black%3B%0A%20%20%20%20border%2Dright%3A%201px%20solid%20black%3B%0A%20%20%20%20color%3A%20black%3B%0A%20%20%20%20font%2Dfamily%3A%20Verdana%2C%20sans%2Dserif%3B%0A%20%20%20%20font%2Dsize%3A%20100%25%3B%0A%20%20%20%20line%2Dheight%3A%20140%25%3B%0A%20%20%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20%20%20border%3A%201px%20dotted%20gray%3B%0A%20%20%20%20background%2Dcolor%3A%20%23ececec%3B%0A%20%20%20%20color%3A%20%231111111%3B%0A%20%20%20%20padding%3A%200%2E5em%3B%0A%7D%0Acode%20%7B%0A%20%20%20%20font%2Dfamily%3A%20monospace%3B%0A%7D%0Ah1%20a%2C%20h2%20a%2C%20h3%20a%2C%20h4%20a%2C%20h5%20a%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20none%3B%0A%20%20%20%20color%3A%20%23777777%3B%0A%7D%0Ah1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%20%7B%20font%2Dfamily%3A%20verdana%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20border%2Dbottom%3A%201px%20dotted%20black%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20color%3A%20%237a5ada%3B%20%7D%0Ah1%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%20130%25%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%20110%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%2095%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%2090%25%3B%0A%20%20%20%20%20%20%20%20font%2Dstyle%3A%20italic%3B%0A%7D%0A%0Ah5%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%2090%25%3B%0A%20%20%20%20%20%20%20%20font%2Dstyle%3A%20italic%3B%0A%7D%0A%0Ah1%2Etitle%20%7B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%20200%25%3B%0A%20%20%20%20%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20%20%20%20%20padding%2Dtop%3A%200%2E2em%3B%0A%20%20%20%20%20%20%20%20padding%2Dbottom%3A%200%2E2em%3B%0A%20%20%20%20%20%20%20%20text%2Dalign%3A%20left%3B%0A%20%20%20%20%20%20%20%20border%3A%20none%3B%0A%7D%0A%0Adt%20code%20%7B%0A%20%20%20%20%20%20%20%20font%2Dweight%3A%20bold%3B%0A%7D%0A%0Add%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%0A%23footer%20%7B%0A%20%20%20%20%20%20%20%20padding%2Dtop%3A%201em%3B%0A%20%20%20%20%20%20%20%20font%2Dsize%3A%2070%25%3B%0A%20%20%20%20%20%20%20%20color%3A%20gray%3B%0A%20%20%20%20%20%20%20%20text%2Dalign%3A%20center%3B%0A%7D%0A" rel="stylesheet">
+</head>
+<body>
+<header>
+<h1 class="title">guile-termios(3) Manual</h1>
+<h2 class="author">Frank Terbeck</h2>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#name"><span class="toc-section-number">1</span> NAME</a></li>
+<li><a href="#synopsis"><span class="toc-section-number">2</span> SYNOPSIS</a></li>
+<li><a href="#description"><span class="toc-section-number">3</span> DESCRIPTION</a></li>
+<li><a href="#api"><span class="toc-section-number">4</span> API</a><ul>
+<li><a href="#struct-termios-handling"><span class="toc-section-number">4.1</span> <code>struct termios</code> Handling</a></li>
+<li><a href="#the-termios-module"><span class="toc-section-number">4.2</span> The <code>(termios)</code> module</a></li>
+<li><a href="#access-to-errno"><span class="toc-section-number">4.3</span> Access to <code>errno</code></a></li>
+<li><a href="#the-termios-with-exceptions-module"><span class="toc-section-number">4.4</span> The <code>(termios with-exceptions)</code> module</a></li>
+</ul></li>
+<li><a href="#examples"><span class="toc-section-number">5</span> EXAMPLES</a></li>
+<li><a href="#see-also"><span class="toc-section-number">6</span> SEE ALSO</a></li>
+<li><a href="#copyright"><span class="toc-section-number">7</span> COPYRIGHT</a></li>
+</ul>
+</nav>
+<h1 id="name"><span class="header-section-number">1</span> NAME</h1>
+<p><code>guile-termios</code> - POSIX Termios interface for GNU Guile Scheme</p>
+<h1 id="synopsis"><span class="header-section-number">2</span> SYNOPSIS</h1>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme"><span class="co">;; The basic interface:</span>
+(use-modules (termios))
+<span class="co">;; A similar interface, that throws exceptions in</span>
+<span class="co">;; case of errors from the C library procedures:</span>
+(use-modules (termios with-exceptions))
+<span class="co">;; System dependent constants and structures:</span>
+(use-modules (termios system))
+
+<span class="co">;; Sample code:</span>
+(<span class="kw">define</span><span class="fu"> tty </span>(open-io-file <span class="st">&quot;/dev/ttyUSB0&quot;</span>))
+(<span class="kw">define</span><span class="fu"> ts </span>(make-termios-struct))
+(tc-get-attr! tty ts)
+(cf-make-raw! ts)
+(tc-set-attr tty ts)
+(close-port tty)</code></pre>
+<h1 id="description"><span class="header-section-number">3</span> DESCRIPTION</h1>
+<p>To query and change settings of serial devices on POSIX systems, the termios API is used. This module implements access to these POSIX functionality for GNU Guile scheme by use of its dynamic foreign function interface.</p>
+<p>In order to do this, the module provides conversion between <code>struct termios</code> instances from C land to a corresponding Scheme structure and utilities to work with said Scheme structure.</p>
+<p>In order to improve portability (the way termios is implemented differs from system to system) the module uses a helper program implemented in C during build time to generate the contents of the <code>(termios system)</code> module. Most importantly, this module contains termios constants such as <code>B9600</code>. The module actually prefixes all constants derived from <code>#defines</code> by <code>termios-</code>, so that example constant is actually available as <code>termios-B9600</code>.</p>
+<p>The library offers two interfaces: <code>(termios)</code> and <code>(termios with-exceptions)</code>. The latter offers the same access as the former, but automatically raises errors when one of the C-library procedures signals failure.</p>
+<p>This manual describes version <code>0.4</code> of the guile-termios library.</p>
+<p></p>
+<h1 id="api"><span class="header-section-number">4</span> API</h1>
+<p>The described API is offered by both <code>(termios)</code> and <code>(termios with-exceptions)</code>, almost completely. See the <em>“The (termios with-exceptions) module”</em> section below for details about the differences.</p>
+<h2 id="struct-termios-handling"><span class="header-section-number">4.1</span> <code>struct termios</code> Handling</h2>
+<dl>
+<dt><code>(make-termios-struct [scheme-structure])</code></dt>
+<dd><p>Return a <code>struct termios</code> instance. If <em>scheme-structure</em> is provides, use it to determine the contents of the instance. If it is not provided, the instance is filled with zeroed out values.</p>
+</dd>
+<dt><code>(parse-termios-struct termios-struct)</code></dt>
+<dd><p>Take a <code>struct termios</code> instance from C-land and return a corresponding Scheme structure. You should <em>not</em> modify that structure manually, but rather use the <code>get-field-from-termios</code> and <code>put-field-into-termios!</code> API functions.</p>
+</dd>
+<dt><code>(get-field-from-termios scm field)</code></dt>
+<dd><p>Extract <code>field</code> from <code>scm</code> (the Scheme structure corresponding to a <code>struct termios</code> instance). Valid fields are actually all fields of <code>struct termios</code> from <code>termios.h</code>; but you should probably only modify <em>c-cflag</em>, <em>c-iflag</em> <em>c-lflag</em> and <em>c-oflag</em> unless you really know what you are doing. See <em>termios(3)</em> for details about the structure’s fields and their values.</p>
+</dd>
+<dt><code>(put-field-into-termios! scm field value)</code></dt>
+<dd><p>Put <code>value</code> into <code>field</code> of <code>scm</code> (the Scheme structure corresponding to a <code>struct termios</code> instance). See <code>get-field-from-termios</code> about possible fields and their values.</p>
+</dd>
+</dl>
+<h2 id="the-termios-module"><span class="header-section-number">4.2</span> The <code>(termios)</code> module</h2>
+<p>All of these procedures work on <code>struct termios</code> instances from C-land, since they wrap the corresponding C-library procedures. This reference uses <code>ts</code> for these parameters. Also instead of working with file-discriptor integers, like the C-library does, the Scheme interface uses <em>ports</em>, which is the standard file access interface in GNU Guile Scheme. Parameters of this kind are referenced as <code>port</code>.</p>
+<p>The C-library procedures signal errors via return values and offers diagnostic information via the POSIX <code>errno</code> mechanism. Currently, GNU Guile’s dynamic FFI does not feature portable access to that value. Therefore, this module offers access to <code>errno</code> in order to enable useful diagnostics. See the <em>“Access to errno”</em> section below for details.</p>
+<dl>
+<dt><code>termios-version</code></dt>
+<dd><p>This is a string constant, that describes the version of the guile termios module.</p>
+</dd>
+<dt><code>(termios-failure? int)</code></dt>
+<dd><p>Returns either <code>#t</code> or <code>#f</code>, depending on whether or not <code>int</code> signals an error returned by one of the C-library procedures wrapped by the module’s API. All values returned by procedures marked as <strong>&lt;failure?&gt;</strong> may be tested using this function.</p>
+</dd>
+<dt><code>(tc-get-attr! port ts)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Get the current attributes from the serial device referenced by <code>port</code> and save the retrieved values to <code>ts</code>. <em>This procedure wraps the</em> <code>tcgetattr</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(tc-set-attr port ts [#:when action])</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Take the termial attributs from <code>ts</code> and apply them to the serial device referenced by <code>port</code>. The <code>action</code> parameter defines when this action is to take place; it defaults to <code>termios-TCSANOW</code> (see <em>termios(3)</em> for details). <em>This procedure wraps the</em> <code>tcsetattr</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(tc-drain port)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p><code>tc-drain</code> waits until all output written to the serial device referenced by <code>port</code> has been transmitted. <em>This procedure wraps the</em> <code>tcdrain</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(tc-flow port action)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Depending on the value of <code>action</code> (see <em>termios(3)</em> for details), this suspends the transmission or reception of data to or from the serial device referenced by <code>port</code>. <em>This procedure wraps the</em> <code>tcflow</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(tc-flush port queue-selector)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p><code>tc-flush</code> discards data written to the serial device referenced by <code>port</code> but not transmitted, or data received but not read, depending on the value of <code>queue-selector</code>. See <em>termios(3)</em> for details. <em>This procedure wraps the</em> <code>tcflush</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(tc-send-break port duration)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p><code>tc-send-break</code> transmits a continuous stream of zero bits for a specified <code>duration</code>, if the device referenced by <code>port</code> is an asynchronous serial device. For details about the <code>duration</code> parameter see <em>termios(3)</em>. <em>This procedure wraps the</em> <code>tcsendbreak</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(cf-make-raw! ts)</code> <strong>&lt;void&gt;</strong></dt>
+<dd><p>Sets the attributs in <code>ts</code> to a “raw” mode. <em>This procedure wraps the</em> <code>cfmakeraw</code> <em>procedure from the C-library.</em> That procedure is an extension to the POSIX standard. If the procedure is not available, the module provides a fallback using the <code>cfmakeraw-fallback</code> function. For that reason <code>cf-make-raw!</code> is implemented as a module.</p>
+</dd>
+<dt><code>(cf-get-ispeed ts)</code> <strong>&lt;baudrate&gt;</strong></dt>
+<dd><p>Extract the incoming speed value from <code>ts</code>. This value is one of the <code>B*</code> constants from the <em>termios.h</em> header file. <em>This procedure wraps the</em> <code>cfgetispeed</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(cf-get-ospeed ts)</code> <strong>&lt;baudrate&gt;</strong></dt>
+<dd><p>Extract the outgoing speed value from <code>ts</code>. This value is one of the <code>B*</code> constants from the <em>termios.h</em> header file. <em>This procedure wraps the</em> <code>cfgetospeed</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(cf-set-ispeed ts speed)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Set the incoming speed value in <code>ts</code> to <code>speed</code>. This value is one of the <code>B*</code> constants from the <em>termios.h</em> header file. <em>This procedure wraps the</em> <code>cfsetispeed</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(cf-set-ospeed ts speed)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Set the outgoing speed value in <code>ts</code> to <code>speed</code>. This value is one of the <code>B*</code> constants from the <em>termios.h</em> header file. <em>This procedure wraps the</em> <code>cfsetospeed</code> <em>procedure from the C-library.</em></p>
+</dd>
+<dt><code>(cf-set-speed ts speed)</code> <strong>&lt;failure?&gt;</strong></dt>
+<dd><p>Set both the incoming and the outgoing speed in <code>ts</code> to <code>speed</code>. <em>This procedure wraps the</em> <code>tcsetattr</code> <em>procedure from the C-library.</em> That procedure is an extension to the POSIX standard. If it is not available in the C-library, the module provides a fallback implemented using <code>cf-set-ispeed</code> and <code>cf-set-ospeed</code>.</p>
+</dd>
+</dl>
+<h2 id="access-to-errno"><span class="header-section-number">4.3</span> Access to <code>errno</code></h2>
+<p><code>errno</code> is an integer value that refers to a reason for C-library procedure to fail. It is significant when the library function’s return value signals that an error has happened. The way <code>errno</code> is implemented differs from system to system, since some systems implement per-thread errno locations, which is usually achieved by a C preprocessor macro along the lines of this:</p>
+<pre class="sourceCode C"><code class="sourceCode c"><span class="ot">#define errno (*__errno())</span></code></pre>
+<p>This library implements the following procedure to implement access to <code>errno</code>:</p>
+<dl>
+<dt><code>(get-errno)</code></dt>
+<dd>Return the current value of <code>errno</code>.
+</dd>
+</dl>
+<p>This is to be used right after the return value of one of the termios procedures was examined (<em>do</em> <strong>not</strong> <em>do it like this!</em>):</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(<span class="kw">if</span> (termios-failure? (tc-drain port))
+    (<span class="kw">let</span> ((errno (get-errno)))
+      ...))</code></pre>
+<p>The problem with this is, that Guile’s runtime may run C-library procedures that touch <code>errno</code> in between the <code>tc-drain</code> and <code>get-errno</code> calls. To avoid this, <code>call-with-blocked-asyncs</code> should be used. In order to ease the use of this, the <code>(termios)</code> module offers a <code>(call-with-errno ...)</code> form:</p>
+<dl>
+<dt><code>(call-with-errno (var expression) fail-expressions ...)</code></dt>
+<dd>This form evaluates <code>expression</code> and stores the return value in a variable named <code>var</code> for later reference. In case <code>(termios-failure? var)</code> returns <code>#t</code>, the expressions in the form’s body are evaluated, with the value of the last expression being the return value of the <code>call-with-errno</code> form. In case <code>var</code> did not signal an error, the form evaluates to <code>#t</code>.
+</dd>
+</dl>
+<p>The <em>“Examples”</em> section below features an example of how to use <code>call-with-errno</code>.</p>
+<h2 id="the-termios-with-exceptions-module"><span class="header-section-number">4.4</span> The <code>(termios with-exceptions)</code> module</h2>
+<p>This module offers another approach to the same POSIX functionality as the <code>(termios)</code> module does. The difference being, that when any of the procedures that may fail signal failure, this module raises an error. Possible exceptions, raised by this modules are:</p>
+<dl>
+<dt><code>termios/no-such-field</code></dt>
+<dd><p>Raised by field accessors for the Scheme representation of <code>struct termios</code> instances (that means either <code>get-field-from-termios</code> or <code>put-field-into-termios!</code>) in case the supplied <code>field</code> parameter is <em>not</em> a valid field name within the termios structure.</p>
+</dd>
+<dt><code>system-error</code></dt>
+<dd><p>Raised by any of the termios procedures, that may fail in case of an actual failure. The error-handling of the procedures of this module properly access <code>errno</code> using <code>call-with-errno</code> and offer the raw value as well as a human readable string (retrieved via <code>strerror</code>) as arguments to the exception.</p>
+</dd>
+</dl>
+<p>The API of the <code>(termios with-exceptions)</code> module otherwise exactly matches the one of the basic <code>(termios)</code> module, except that it <em>does</em> <em>not</em> export the <code>errno</code> access API, since the error handling of the module takes care of that for the user already.</p>
+<h1 id="examples"><span class="header-section-number">5</span> EXAMPLES</h1>
+<p>In the first example, let’s open a serial device and set it to <code>9600bd 8N1</code> mode. The example uses the <code>(termios with-exceptions)</code> module, which means that any failure would cause the script to error out automatically:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(use-modules (termios with-exceptions)
+             (termios system))
+(<span class="kw">define</span><span class="fu"> tty </span>(open-io-file <span class="st">&quot;/dev/ttyUSB0&quot;</span>))
+(<span class="kw">define</span><span class="fu"> ts </span>(make-termios-struct))
+(tc-get-attr! tty ts)
+(cf-make-raw! ts)
+(cf-set-speed ts termios-B9600)
+(tc-set-attr tty ts)
+(close-port tty)</code></pre>
+<p>To show how to access fields in <code>struct termios</code> instances from Scheme, let’s set the <code>ECHO</code> bit in the <code>c-lflag</code> field (remember that constants are named <code>termios-*</code> in <code>(termios system)</code>, which means that <code>ECHO</code> from the C library header file is available as <code>termios-ECHO</code>):</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(<span class="kw">define</span><span class="fu"> tty </span><span class="st">&quot;/dev/ttyUSB0&quot;</span>)
+(<span class="kw">define</span><span class="fu"> prt </span>(open-io-file tty))
+(<span class="kw">define</span><span class="fu"> ts </span>(make-termios-struct)
+(tc-get-attr! tty ts)
+(<span class="kw">let*</span> ((ts-scm (parse-termios-struct ts))
+       (lflag (get-field-from-termios ts-scm 'c-lflag))
+       (new-value (logior lflag termios-ECHO)))
+  (put-field-into-termios! ts-scm 'c-lflag new-value)
+  (tc-set-attr tty (make-termios-struct new-value)))</code></pre>
+<p>Finally, here is an example of how to use <code>call-with-errno</code> to properly access the value of <code>errno</code> by the use of <code>call-with-blocked-asyncs</code>:</p>
+<pre class="sourceCode Scheme"><code class="sourceCode scheme">(<span class="kw">define</span><span class="fu"> tty </span><span class="st">&quot;/dev/ttyUSB0&quot;</span>)
+(<span class="kw">define</span><span class="fu"> prt </span>(open-io-file tty))
+(<span class="kw">define</span><span class="fu"> ts </span>(make-termios-struct)
+(call-with-errno (errno (tc-get-attr! port ts))
+  (strerror errno)
+  (close port)
+  (quit EXIT_FAILURE))</code></pre>
+<h1 id="see-also"><span class="header-section-number">6</span> SEE ALSO</h1>
+<p><em>termios(3)</em>, <em>termios.h(7)</em>, <em>errno(3)</em>, <em>errno.h(7)</em>, <em>guile(1)</em> and the <em>Guile Reference Manual</em></p>
+<p></p>
+<h1 id="copyright"><span class="header-section-number">7</span> COPYRIGHT</h1>
+<p>Copyright (c) 2014 <code>Frank Terbeck &lt;ft@bewatermyfriend.org&gt;</code>, All rights reserved.</p>
+<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+<ol type="1">
+<li>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li>
+<li>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li>
+</ol>
+<p>THIS SOFTWARE IS PROVIDED “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS OF THE PROJECT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+</body>
+</html>

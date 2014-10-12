@@ -1,4 +1,4 @@
-MAN = guile-termios.1
+MAN = guile-termios.3
 PDF = guile-termios.pdf
 HTML = guile-termios.html
 
@@ -17,7 +17,7 @@ man: $(MAN)
 pdf: $(PDF)
 html: $(HTML)
 
-guile-termios.1: guile-termios.mdwn
+guile-termios.3: guile-termios.mdwn
 	pandoc -t man $(COMMONOPTIONS) $(DISPATCH_MAN_META) -o $@ guile-termios.mdwn
 guile-termios.pdf: guile-termios.mdwn
 	pandoc --template template.latex $(COMMONOPTIONS) $(TEX_META) $(DISPATCH_TEX_META) -o $@ guile-termios.mdwn

@@ -298,8 +298,8 @@ header file is available as `termios-ECHO`):
 (let* ((ts-scm (parse-termios-struct ts))
        (lflag (get-field-from-termios ts-scm 'c-lflag))
        (new-value (logior lflag termios-ECHO)))
-  (put-field-into-termios! ts-scm 'c-lflag new-value))
-;; ...
+  (put-field-into-termios! ts-scm 'c-lflag new-value)
+  (tc-set-attr tty (make-termios-struct new-value)))
 ~~~~~~~~
 
 Finally, here is an example of how to use `call-with-errno` to properly access

@@ -50,8 +50,8 @@ errors when one of the C-library procedures signals failure.
 # API
 
 The described API is offered by both `(termios)` and `(termios
-with-exceptions)`, almost completely. See the *“The (termios with-exceptions)”
-module* section below for details about the differences.
+with-exceptions)`, almost completely. See the *“The (termios with-exceptions)
+module”* section below for details about the differences.
 
 ## `struct termios` Handling
 

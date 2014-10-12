@@ -6,6 +6,9 @@ TESTDRIVER = "/bin/sh ./test-driver"
 
 all: gps scheme/termios/system.scm
 
+doc:
+	(cd doc && $(MAKE) all;)
+
 gen-platform-specifics.c: gen-gps.scm gen-gps.sh
 	GUILE_BINARY="$(GUILE_BINARY)" sh ./gen-gps.sh > $@
 
@@ -49,4 +52,4 @@ test: plausible test-suite
 
 test-verbose: plausible test-suite-verbose
 
-.PHONY: all clean clean-byte-compile compile install plausible test-suite test-suite-verbose test test-verbose
+.PHONY: all clean clean-byte-compile compile doc install plausible test-suite test-suite-verbose test test-verbose

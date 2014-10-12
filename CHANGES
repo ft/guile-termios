@@ -1,7 +1,7 @@
  User-visible changes in guile-termios
 =======================================
 
-* 0.3 → 0.4
+* 0.3 → 0.4 (released 2014-10-12):
 
   - Added a reference manual, finally.
 

@@ -53,6 +53,9 @@ directory of the project:
 
   % make doc
 
+At every release of the library, pre-built versions of the reference manual are
+added tho the ‘manual’ branch of guile-termios' git repository.
+
 
 About the test-suite...
 -----------------------

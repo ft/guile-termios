@@ -261,8 +261,8 @@
 (define (tc-get-attr! port termios)
   (tcgetattr (port->fdes port) termios))
 
-(define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
-  (tcsetattr (port->fdes port) optional-action termios))
+(define* (tc-set-attr port termios #:key (when termios-TCSANOW))
+  (tcsetattr (port->fdes port) when termios))
 
 (define (cfmakeraw-fallback termios)
   (let* ((ts-scm (parse-termios-struct termios))

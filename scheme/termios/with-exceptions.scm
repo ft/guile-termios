@@ -65,8 +65,6 @@
 (defexcp tc-get-attr! base:tc-get-attr! port termios)
 (defexcp tc-send-break base:tc-send-break port duration)
 
-(define* (tc-set-attr port termios #:key (optional-action termios-TCSANOW))
-  (base:call-with-errno (errno (base:tc-set-attr port termios
-                                                 #:optional-action
-                                                 optional-action))
+(define* (tc-set-attr port termios #:key (when termios-TCSANOW))
+  (base:call-with-errno (errno (base:tc-set-attr port termios #:when when))
     (termios-error errno)))

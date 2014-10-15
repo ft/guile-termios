@@ -85,6 +85,20 @@ module”* section below for details about the differences.
      to a `struct termios` instance). See `get-field-from-termios` about
      possible fields and their values.
 
+To access the *c-cc* field of the structure, use the following two procedures
+instead of manually dealing with the structure. The underlying implementation
+may change in the future, this API should remain stable.
+
+`(get-from-c-cc scm entry)`
+
+:    Get an `entry` (like *termios-VSUSP*) from the *c-cc* field of `scm`
+     (the Scheme structure corresponding to a `struct termios` instance).
+
+`(put-into-c-cc scm entry value)`
+
+:    Set an `entry` (like *termios-VSUSP*) from the *c-cc* field of `scm`
+     (the Scheme structure corresponding to a `struct termios` instance)
+     to `value`.
 
 ## The `(termios)` module
 

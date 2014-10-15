@@ -236,6 +236,8 @@
          (format #t "#ifdef ~a~%" x)
          (format #t "    printf(\"(define-public termios-~a %ld)\\n\", ~a);~%"
                  x x)
+         (format #t "#else~%")
+         (format #t "    printf(\"(define-public termios-~a #f)\\n\");~%" x)
          (format #t "#endif /* ~a */~%" x))
        lst))
 

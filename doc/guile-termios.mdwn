@@ -75,9 +75,9 @@ module”* section below for details about the differences.
 :    Extract `field` from `scm` (the Scheme structure corresponding to a
      `struct termios` instance). Valid fields are actually all fields of
      `struct termios` from `termios.h`; but you should probably only modify
-     *c-cflag*, *c-iflag* *c-lflag* and *c-oflag* unless you really know
-     what you are doing. See *termios(3)* for details about the structure's
-     fields and their values.
+     *c-cflag*, *c-iflag* *c-lflag*, *c-oflag* and *c-cc* unless you really
+     know what you are doing. See *termios(3)* for details about the
+     structure's fields and their values.
 
 `(put-field-into-termios! scm field value)`
 

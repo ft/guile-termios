@@ -37,6 +37,6 @@
 
   - Added high-level module (termios with-exceptions)
 
-  - Added an actual test-suite (on top of the general plausibility test
+  - Added an actual test-suite (on top of the general plausibility test)
 
   - Licence switched to 2-clause BSD.

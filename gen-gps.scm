@@ -234,7 +234,7 @@
   (format #t "    printf(\"\\n;; #defines:\\n\");~%")
   (map (lambda (x)
          (format #t "#ifdef ~a~%" x)
-         (format #t "    printf(\"(define-public termios-~a %ld)\\n\", ~a);~%"
+         (format #t "    printf(\"(define-public termios-~a #x%lx)\\n\", ~a);~%"
                  x x)
          (format #t "#else~%")
          (format #t "    printf(\"(define-public termios-~a #f)\\n\");~%" x)

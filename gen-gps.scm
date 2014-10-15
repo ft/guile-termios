@@ -90,8 +90,21 @@
     B3500000
     B4000000
     BRKINT
+    BS0
+    BS1
+    BSDLY
+    CBAUD
+    CBAUDEX
+    CIBAUD
     CLOCAL
+    CMSPAR
+    CR0
+    CR1
+    CR2
+    CR3
+    CRDLY
     CREAD
+    CRTSCTS
     CS5
     CS6
     CS7
@@ -99,9 +112,19 @@
     CSIZE
     CSTOPB
     ECHO
+    ECHOCTL
     ECHOE
     ECHOK
+    ECHOKE
     ECHONL
+    ECHOPRT
+    EXTA
+    EXTB
+    EXTPROC
+    FF0
+    FF1
+    FFDLY
+    FLUSHO
     HUPCL
     ICANON
     ICRNL
@@ -119,6 +142,9 @@
     IXANY
     IXOFF
     IXON
+    NL0
+    NL1
+    NLDLY
     NOFLSH
     OCRNL
     OFDEL
@@ -131,18 +157,46 @@
     PARENB
     PARMRK
     PARODD
+    PENDIN
+    TAB0
+    TAB1
+    TAB2
+    TAB3
+    TABDLY
     TCIFLUSH
+    TCIOFLUSH
+    TCIOFF
+    TCION
+    TCOFLUSH
     TCOOFF
+    TCOON
     TCSADRAIN
     TCSAFLUSH
     TCSANOW
     TOSTOP
+    VDISCARD
+    VEOF
+    VEOL
+    VEOL2
+    VERASE
     VINTR
+    VKILL
+    VLNEXT
+    VMIN
+    VQUIT
+    VREPRINT
+    VSTART
     VSTOP
     VSUSP
+    VSWTC
+    VSWTCH
     VT0
     VT1
-    VTDLY))
+    VTDLY
+    VTIME
+    VWERASE
+    XCASE
+    XTABS))
 
 (define gps-offsets
   '((c-iflag c_iflag tcflag-t GUILE_TERMIOS_HAS_C_IFLAG)

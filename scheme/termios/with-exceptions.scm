@@ -14,7 +14,9 @@
                (base:termios-failure? . termios-failure?)
                (base:termios-version . termios-version))
   #:export (get-field-from-termios
+            get-from-c-cc
             put-field-into-termios!
+            put-into-c-cc
 
             cf-set-ispeed!
             cf-set-ospeed!

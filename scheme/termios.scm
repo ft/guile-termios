@@ -11,7 +11,9 @@
   #:export (make-termios-struct
             parse-termios-struct
             get-field-from-termios
+            get-from-c-cc
             put-field-into-termios!
+            put-into-c-cc
 
             cf-get-ispeed
             cf-get-ospeed
@@ -200,6 +202,12 @@
     (if idx
         (list-set! lst idx value)
         #f)))
+
+(define (get-from-c-cc lst field)
+  (list-ref (get-field-from-termios lst 'c-cc) field))
+
+(define (put-into-c-cc lst field value)
+  (list-set! (get-field-from-termios lst 'c-cc) field value))
 
 ;; Macro to help with multiple ‘pointer->procedure’ calls.
 (define-syntax define-libc-procedure

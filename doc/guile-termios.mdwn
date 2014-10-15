@@ -338,8 +338,6 @@ the value of `errno` by the use of `call-with-blocked-asyncs`:
  *Guile Reference Manual*
 
 
-\newpage
-
 # COPYRIGHT
 
 Copyright (c) 2014 `Frank Terbeck <ft@bewatermyfriend.org>`, All rights

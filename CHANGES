@@ -1,6 +1,15 @@
  User-visible changes in guile-termios
 =======================================
 
+* 0.4 → 0.5
+
+  - API for accessing c-cc fields added: get-from-c-cc and put-into-c-cc
+
+  - More termios constants added to (termios system)
+
+  - Non-existent constants in (termios system) are not dropped entirely
+    anymore but set to ‘#f’.
+
 * 0.3 → 0.4 (released 2014-10-12):
 
   - Added a reference manual, finally.

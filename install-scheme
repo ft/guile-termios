@@ -26,6 +26,11 @@
       (set! documentation-prefix (caddr (command-line)))
       (set! documentation-prefix "/usr/local")))
 
+(define makefile-destdir (let ((dd (getenv "DESTDIR")))
+                           (if (and dd (not (string=? dd "")))
+                               (string-concatenate (list dd "/"))
+                               "")))
+
 (define (file-exists? name)
   "Return #t if a file (of any kind) named NAME exist."
   (access? name F_OK))
@@ -73,7 +78,10 @@ Should any directories need to be created for performing the file-copy, the
 mode for these directories will be DIRECTORY-MODE. FILE-MODE, DIRECTORY-MODE
 and DESTINATION-DIRECTORY are keyword-arguments with these respective default
 values: #o644, #o755 and the return-value of (%site-dir)."
-  (let* ((destfile (string-concatenate (list destination-directory "/" dest)))
+  (let* ((destfile (string-concatenate (list makefile-destdir
+                                             destination-directory
+                                             "/"
+                                             dest)))
          (full-dest-dir (dirname destfile)))
     (unless (and (file-exists? full-dest-dir)
                  (is-directory? full-dest-dir))

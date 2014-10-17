@@ -3,6 +3,7 @@ GUILE_BINARY = guile
 PERL_BINARY = perl
 HARNESS = prove
 TESTDRIVER = "/bin/sh ./test-driver"
+DESTDIR ?= ""
 DOC_PREFIX ?= "/usr/local"
 
 all: gps scheme/termios/system.scm
@@ -36,10 +37,10 @@ clean: clean-byte-compile
 	rm -f config.h
 
 install-doc:
-	GUILE_BINARY="$(GUILE_BINARY)" sh ./install documentation $(DOC_PREFIX)
+	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./install documentation $(DOC_PREFIX)
 
 install:
-	GUILE_BINARY="$(GUILE_BINARY)" sh ./install
+	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./install
 
 plausible:
 	sh ./tests/test-this-terminal.sh

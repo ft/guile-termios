@@ -1,0 +1,27 @@
+          Checklist for Guile-Termios Releases
+        ========================================
+
+ 1. Update version tag in:
+
+    - doc/guile-termios.mdwn: Strip the +git tag and increment.
+
+    - scheme/termios.scm: Which version does the manual refer to?
+
+ 2. Update CHANGES with all user-visible changes that are not yet listed.
+
+ 3. Add (released ...) tag to the most recent version.
+
+ 4. Commit those changes.
+
+ 5. Tag that commit.
+
+ 6. Generate reference documentation and update the ‘manual’ branch with
+    the resulting files.
+
+ 7. Commit updated files to ‘manual’ branch.
+
+ 8. Tag the latest commit in the ‘manual’ branch.
+
+ 9. Push changes and tags to the public repository.
+
+10. Add +git tag to ‘termios-version’ in “scheme/termios.scm”.

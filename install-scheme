@@ -7,6 +7,25 @@
 ;; Set this to #t to disable and actual file-system changes!
 (define install-debug #f)
 
+(define manuals '(("doc/guile-termios.3" . "man3")))
+
+(define documentation '("README"
+                        "LICENCE"
+                        "CHANGES"
+                        "doc/guile-termios.html"
+                        "doc/guile-termios.pdf"))
+
+(define documentation-installation? #f)
+(define documentation-prefix #f)
+
+(when (and (>= (length (command-line)) 2)
+           (string=? (cadr (command-line))
+                     "documentation"))
+  (set! documentation-installation? #t)
+  (if (>= (length (command-line)) 3)
+      (set! documentation-prefix (caddr (command-line)))
+      (set! documentation-prefix "/usr/local")))
+
 (define (file-exists? name)
   "Return #t if a file (of any kind) named NAME exist."
   (access? name F_OK))
@@ -113,5 +132,21 @@ like this:
                     0
                     dir))
 
-(foreach-file-in "scheme" install-scheme
-                 #:exclude '(".git" "test"))
+(define (install-manual-file file)
+  (install-file (car file) (basename (car file))
+                #:destination-directory (string-concatenate
+                                         (list documentation-prefix
+                                               "/share/man/"
+                                               (cdr file)))))
+
+(define (install-doc-file file)
+  (install-file file file
+                #:destination-directory
+                (string-concatenate (list documentation-prefix
+                                          "/share/doc/guile-termios"))))
+
+(if documentation-installation?
+    (begin (for-each install-manual-file manuals)
+           (for-each install-doc-file documentation))
+    (foreach-file-in "scheme" install-scheme
+                     #:exclude '(".git" "test")))

@@ -140,18 +140,27 @@ like this:
                     0
                     dir))
 
+(define-syntax-rule (with-source-file file code ...)
+  (if (not (file-exists? file))
+      (format #t "Source file does not exist: ~a ...skipping.~%" file)
+      (begin code ...)))
+
 (define (install-manual-file file)
-  (install-file (car file) (basename (car file))
-                #:destination-directory (string-concatenate
-                                         (list documentation-prefix
-                                               "/share/man/"
-                                               (cdr file)))))
+  (with-source-file
+   (car file)
+   (install-file (car file) (basename (car file))
+                 #:destination-directory (string-concatenate
+                                          (list documentation-prefix
+                                                "/share/man/"
+                                                (cdr file))))))
 
 (define (install-doc-file file)
-  (install-file file file
-                #:destination-directory
-                (string-concatenate (list documentation-prefix
-                                          "/share/doc/guile-termios"))))
+  (with-source-file
+   file
+   (install-file file file
+                 #:destination-directory
+                 (string-concatenate (list documentation-prefix
+                                           "/share/doc/guile-termios")))))
 
 (if documentation-installation?
     (begin (for-each install-manual-file manuals)

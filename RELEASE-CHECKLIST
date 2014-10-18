@@ -3,13 +3,13 @@
 
  1. Update version tag in:
 
-    - doc/guile-termios.mdwn: Strip the +git tag and increment.
+    - doc/guile-termios.mdwn: Which version does the manual refer to?
 
-    - scheme/termios.scm: Which version does the manual refer to?
+    - scheme/termios.scm: Strip the +git tag and increment.
 
  2. Update CHANGES with all user-visible changes that are not yet listed.
 
- 3. Add (released ...) tag to the most recent version.
+ 3. Add (released ...) tag to the most recent version in CHANGES.
 
  4. Commit those changes.
 

@@ -1,7 +1,7 @@
  User-visible changes in guile-termios
 =======================================
 
-* 0.4 → 0.5
+* 0.4 → 0.5 (released 2014-10-18):
 
   - Documentation can be installed via Makefile target: install-doc
 

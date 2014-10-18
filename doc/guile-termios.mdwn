@@ -45,7 +45,7 @@ The library offers two interfaces: `(termios)` and `(termios with-exceptions)`.
 The latter offers the same access as the former, but automatically raises
 errors when one of the C-library procedures signals failure.
 
-This manual describes version `0.4` of the guile-termios library.
+This manual describes version `0.5` of the guile-termios library.
 
 \newpage
 

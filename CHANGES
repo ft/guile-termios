@@ -3,6 +3,8 @@
 
 * 0.4 → 0.5
 
+  - Documentation can be installed via Makefile target: install-doc
+
   - API for accessing c-cc fields added: get-from-c-cc and put-into-c-cc
 
   - More termios constants added to (termios system)

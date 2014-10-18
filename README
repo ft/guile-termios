@@ -56,6 +56,10 @@ directory of the project:
 At every release of the library, pre-built versions of the reference manual are
 added tho the ‘manual’ branch of guile-termios' git repository.
 
+The project's documentation can be installed to the system by issuing:
+
+  # make install-doc
+
 
 About the test-suite...
 -----------------------

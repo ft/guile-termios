@@ -3,11 +3,14 @@
 GUILE_LOAD_PATH=$PWD/scheme
 export GUILE_LOAD_PATH
 
-for dir in scheme/*/ scheme/; do
+for dir in scheme/*/*/*/*/*/ scheme/*/*/*/*/ \
+           scheme/*/*/*/ scheme/*/*/ scheme/*/ scheme/; do
     [ ! -d "$dir" ] && continue
+    printf 'Entering directory `%s'\''...\n' "$dir"
     (cd "$dir" && for input in *.scm; do
+                      [ ! -f "$input" ] && continue
                       output="${input%.*}.go"
-                      [ "$input" -nt "$output" ] || continue
-                      guild compile -o "$output" "$input"
-                  done; )
+                      [ -e "$output" ] && [ "$output" -nt "$input" ] && continue
+                      guild compile -o "$output" "$input" || exit 1
+                  done; ) || exit 1
 done

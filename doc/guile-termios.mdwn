@@ -284,6 +284,27 @@ one of the basic `(termios)` module, except that it *does* *not* export the
 for the user already.
 
 
+## Beyond `termios`
+
+The module also allows access to some functionality that goes beyond the scope
+of standard termios, like taking control of modem lines such as the `DTR`
+(**d**data **t**erminal **r**eady) and `RTS` (**r**equest **t**o **s**end)
+pins.
+
+`(set-rts port value)`
+
+:    Set the `RTS` modem signal to the boolean `value`.
+
+`(set-dtr port value)`
+
+:    Set the `DTR` modem signal to the boolean `value`.
+
+
+Note, with both `RTS` and `DTR`, that these signals are active low in TTL
+serial connections and therefore the electrical voltage level is inverted from
+the logical modem control bit.
+
+
 # EXAMPLES
 
 In the first example, let's open a serial device and set it to `9600bd 8N1`

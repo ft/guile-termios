@@ -24,6 +24,9 @@
             tc-get-attr!
             tc-set-attr
 
+            set-rts
+            set-dtr
+
             cf-make-raw!
             tc-drain
             tc-flow
@@ -333,3 +336,28 @@
         (if (< res 0)
             res
             (cfsetospeed termios speed)))))
+
+;; Beyond termios
+
+(define-libc-procedure int ioctl int long '*)
+
+(define (ioctl-tiocmget port)
+  (let* ((n (sizeof int))
+         (bv (make-bytevector n 0))
+         (p (bytevector->pointer bv)))
+    (ioctl (port->fdes port) TIOCMGET p)
+    (bytevector-sint-ref (pointer->bytevector p n) 0 (native-endianness) n)))
+
+(define (ioctl-tiocmset port value)
+  (let ((bv (make-bytevector (sizeof int))))
+    (bytevector-sint-set! bv 0 value (native-endianness) (sizeof int))
+    (ioctl (port->fdes port) TIOCMSET (bytevector->pointer bv))))
+
+(define (set-io-bit port bit value)
+  (let ((raw (ioctl-tiocmget port)))
+    (ioctl-tiocmset port (if value
+                             (logior bit raw)
+                             (logand (lognot bit) raw)))))
+
+(define (set-rts port value) (set-io-bit port termios-TIOCM-RTS value))
+(define (set-dtr port value) (set-io-bit port termios-TIOCM-DTR value))

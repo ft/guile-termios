@@ -2,7 +2,7 @@ MAN = guile-termios.3
 PDF = guile-termios.pdf
 HTML = guile-termios.html
 
-COMMONOPTIONS = --self-contained --number-sections --normalize --smart --toc
+COMMONOPTIONS = --self-contained --number-sections --toc
 
 TEX_META = -V date='\today' --highlight-style=monochrome
 HTML_META = -c manual.css

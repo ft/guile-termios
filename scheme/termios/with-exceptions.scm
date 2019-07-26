@@ -70,3 +70,8 @@
 (define* (tc-set-attr port termios #:key (when termios-TCSANOW))
   (base:call-with-errno (errno (base:tc-set-attr port termios #:when when))
     (termios-error errno)))
+
+;; Extensions beyond termios
+
+(defexcp set-dtr base:set-dtr port value)
+(defexcp set-rts base:set-rts port value)

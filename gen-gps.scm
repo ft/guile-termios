@@ -1,4 +1,4 @@
-;; Copyright (c) 2014 Frank Terbeck <ft@bewatermyfriend.org>
+;; Copyright (c) 2014-2019 Frank Terbeck <ft@bewatermyfriend.org>
 ;; All rights reserved.
 ;;
 ;; Terms for redistribution and use can be found in LICENCE.
@@ -7,7 +7,7 @@
 
 (setlocale LC_ALL "")
 
-(define cr-1 "Copyright (c) 2014 Frank Terbeck <ft@bewatermyfriend.org>")
+(define cr-1 "Copyright (c) 2014-2019 Frank Terbeck <ft@bewatermyfriend.org>")
 (define cr-2 "All rights reserved.")
 (define cr-3 "Terms for redistribution and use can be found in LICENCE.")
 

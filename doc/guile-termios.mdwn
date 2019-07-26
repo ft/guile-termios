@@ -363,7 +363,7 @@ the value of `errno` by the use of `call-with-blocked-asyncs`:
 
 # COPYRIGHT
 
-Copyright (c) 2014 `Frank Terbeck <ft@bewatermyfriend.org>`, All rights
+Copyright (c) 2014-2019 `Frank Terbeck <ft@bewatermyfriend.org>`, All rights
 reserved.
 
 Redistribution and use in source and binary forms, with or without

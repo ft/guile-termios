@@ -34,8 +34,6 @@
             tc-flush
             tc-send-break
 
-            call-with-errno
-            get-errno
             termios-failure?
             termios-version))
 
@@ -59,118 +57,10 @@
 
 (define libc (dynamic-link-w/system))
 
-;; ‘errno’ handling:
-;;
-;; Most termios procedures in the C library set the ‘errno’ variable in case of
-;; errors to point to the right diagnostic for the underlying problem. At this
-;; point, Guile's dynamic FFI does not provide portable access to that value:
-;;
-;;   http://debbugs.gnu.org/cgi/bugreport.cgi?bug=18592
-;;
-;; The following implements a procedure ‘get-errno’, that returns the current
-;; value of ‘errno’. The naïve thing to do would be:
-;;
-;;   (tc-drain prt)
-;;   (get-errno)
-;;
-;; The issue with this is, that Guile's runtime might run some functionality
-;; that touches errno in between those two calls. On IRC, Ludovic Courtès
-;; mentions the use of ‘call-with-blocked-asyncs’ circumvent this.
-
 (define-syntax-rule (maybe dynamic name lib-handle)
   (catch #t
     (lambda () (dynamic name lib-handle))
     (lambda (k . a) #f)))
-
-;; The ‘errno’ value in this module looks like this:
-;;
-;; (<pointer> <type> <name>)
-;;
-;; or #f in case no suitable pointer could be found.
-;;
-;; <type> is either ‘function’ or ‘variable’. <name> is a string: The name of
-;; the symbol in the C library to lookup.
-;;
-;; Why would there be functions? Well, some C libraries have per-thread values
-;; for ‘errno’ and the functions return a pointer to the location of the value
-;; for the particular thread. Thus ‘errno’ is defined like this:
-;;
-;;   #define errno (*__errno())
-;;
-;; This code supports these kinds of functions and falls back to a raw ‘errno’
-;; value in case no such function could be found.
-
-(define errno-locations
-  '(("__errno_location" . function)     ; glibc
-    ("__errno" . function)              ; cygwin
-    ("errno" . variable)))              ; fallback
-
-(define errno (let loop ((loc errno-locations))
-                (cond ((null? loc) #f)
-                      ((eq? 'function (cdar loc))
-                       (let* ((name (caar loc))
-                              (func (maybe dynamic-func name libc)))
-                         (if func
-                             (list (pointer->procedure '* func '())
-                                   'function name)
-                             (loop (cdr loc)))))
-                      (else
-                       (let* ((name (caar loc))
-                              (ptr (maybe dynamic-pointer name libc)))
-                         (if ptr
-                             (list ptr 'variable name)
-                             (loop (cdr loc))))))))
-
-;; In case ‘errno’ is #f, something went horribly wrong. In that case
-;; ‘get-errno’ always returns 0, because the real errno value could not be
-;; retrieved. The same is true, if the location that was indicated by the C
-;; library is the NULL pointer. Otherwise the location is parsed using
-;; ‘parse-c-struct’ with a single entry: ‘errno-t’
-;;
-;; ‘errno-t’ is determined upon module generation. It's actual type can be
-;; found in (termios system).
-
-(define get-errno
-  (if errno
-      (if (eq? 'function (cadr errno))
-          (lambda ()
-            (let* ((func (car errno))
-                   (raw (func)))
-              (if (null-pointer? raw)
-                  0
-                  (car (parse-c-struct raw (list errno-t))))))
-          (if (null-pointer? (car errno))
-              (lambda () 0)
-              (lambda () (car (parse-c-struct (car errno)
-                                              (list errno-t))))))
-      (lambda () 0)))
-
-;; To deal with ‘call-with-blocked-asyncs’ easier, here is a bit of syntactic
-;; sugar:
-;;
-;;   ...
-;;   (define tty "/dev/ttyUSB0")
-;;   (define prt (open-io-file tty))
-;;   (define ta (make-termios-struct)
-;;   (call-with-errno (errno (tc-get-attr! prt ts))
-;;     (strerror errno)
-;;     (close prt)
-;;     (quit EXIT_FAILURE))
-;;   ...
-;;
-;; It's like a ‘let’ with only one value, where the expressions in the body are
-;; called only of the expression setting the value failed. In case it didn't
-;; fail the whole expression returns #t.
-
-(define-syntax-rule (call-with-errno (errno exp) fail0 fail1 ...)
-  (let-values (((failed? errno) (call-with-blocked-asyncs
-                                 (lambda ()
-                                   (let* ((f? (termios-failure? exp))
-                                          (err (if f? (get-errno) 0)))
-                                     (values f? err))))))
-    (if failed?
-        (begin fail0 fail1 ...)
-        #t)))
 
 (define (termios-failure? result)
   (< result 0))
@@ -214,9 +104,9 @@
   (list-set! (get-field-from-termios lst 'c-cc) field value))
 
 ;; Macro to help with multiple ‘pointer->procedure’ calls.
-(define-syntax define-libc-procedure
+(define-syntax define-libc-procedure*
   (syntax-rules ()
-    ((_ retval name arg ...)
+    ((_ with-errno? retval name arg ...)
      (define name
        (let ((df (catch #t
                    (lambda ()
@@ -233,27 +123,34 @@
                                (quote name)))
                      #f))))
          (if df
-             (pointer->procedure retval df (list arg ...))
+             (pointer->procedure retval df (list arg ...)
+                                 #:return-errno? with-errno?)
              #f))))))
+
+(define-syntax-rule (define-libc-procedure args ...)
+  (define-libc-procedure* #f args ...))
+
+(define-syntax-rule (define-errno-procedure args ...)
+  (define-libc-procedure* #t args ...))
 
 ;; FFI links to the POSIX termios functions in the C library
 
-(define-libc-procedure int tcdrain int)
-(define-libc-procedure int tcflow int int)
-(define-libc-procedure int tcflush int int)
-(define-libc-procedure int tcsendbreak int int)
+(define-errno-procedure int tcdrain int)
+(define-errno-procedure int tcflow int int)
+(define-errno-procedure int tcflush int int)
+(define-errno-procedure int tcsendbreak int int)
 
-(define-libc-procedure int tcgetattr int '*)
-(define-libc-procedure int tcsetattr int int '*)
+(define-errno-procedure int tcgetattr int '*)
+(define-errno-procedure int tcsetattr int int '*)
 
 (define-libc-procedure void cfmakeraw '*)
 
 (define-libc-procedure speed-t cfgetispeed '*)
 (define-libc-procedure speed-t cfgetospeed '*)
 
-(define-libc-procedure int cfsetispeed '* speed-t)
-(define-libc-procedure int cfsetospeed '* speed-t)
-(define-libc-procedure int cfsetspeed '* speed-t)
+(define-errno-procedure int cfsetispeed '* speed-t)
+(define-errno-procedure int cfsetospeed '* speed-t)
+(define-errno-procedure int cfsetspeed '* speed-t)
 
 ;; Front-ends for the scheme world (interface using ports rather than file
 ;; descriptors).

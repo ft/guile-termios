@@ -4,6 +4,8 @@
 ;; Terms for redistribution and use can be found in LICENCE.
 
 (define-module (termios with-exceptions)
+  #:use-module (ice-9 optargs)
+  #:use-module (srfi srfi-11)
   #:use-module ((termios) #:prefix base:)
   #:use-module (termios system)
   #:re-export ((base:cf-get-ispeed . cf-get-ispeed)
@@ -44,19 +46,20 @@
 ;; In the case of failure, error-reporting is done via POSIX's ‘errno’
 ;; facility.
 
-(define (termios-error fnc errno)
+(define (termios-error fnc value errno)
   (scm-error 'system-error
              (symbol->string fnc)
              "~s"
              (list (strerror errno))
-             (list errno)))
+             (list value errno)))
 
 (define-syntax defexcp
   (syntax-rules ()
     ((_ fe be args ...)
      (define (fe args ...)
-       (base:call-with-errno (errno (be args ...))
-         (termios-error 'fe errno))))))
+       (let-values (((value errno) (be args ...)))
+         (when (base:termios-failure? value)
+           (termios-error 'fe value errno)))))))
 
 (defexcp cf-set-ispeed! base:cf-set-ispeed! termios speed)
 (defexcp cf-set-ospeed! base:cf-set-ospeed! termios speed)
@@ -68,8 +71,9 @@
 (defexcp tc-send-break base:tc-send-break port duration)
 
 (define* (tc-set-attr port termios #:key (when termios-TCSANOW))
-  (base:call-with-errno (errno (base:tc-set-attr port termios #:when when))
-    (termios-error errno)))
+  (let-values (((value errno) (base:tc-set-attr port termios #:when when)))
+    (if (base:termios-failure? value)
+        (termios-error 'tc-set-attr value errno))))
 
 ;; Extensions beyond termios
 

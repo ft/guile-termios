@@ -211,51 +211,6 @@ errno"* section below for details.
      using `cf-set-ispeed` and `cf-set-ospeed`.
 
 
-## Access to `errno`
-
-`errno` is an integer value that refers to a reason for C-library procedures to
-fail. It is significant when the library function's return value signals that
-an error has happened. The way `errno` is implemented differs from system to
-system, since some systems implement per-thread errno locations, which is
-usually achieved by a C preprocessor macro along the lines of this:
-
-~~~~~~~~ {.C}
-#define errno (*__errno())
-~~~~~~~~
-
-This library implements the following procedure to implement access to `errno`:
-
-`(get-errno)`
-
-:    Return the current value of `errno`.
-
-This is to be used right after the return value of one of the termios
-procedures was examined (*do* **not** *do it like this!*):
-
-~~~~~~~~ {.Scheme}
-(if (termios-failure? (tc-drain port))
-    (let ((errno (get-errno)))
-      ...))
-~~~~~~~~
-
-The problem with this is, that Guile's runtime may run C-library procedures
-that touch `errno` in between the `tc-drain` and `get-errno` calls. To avoid
-this, `call-with-blocked-asyncs` should be used. In order to ease the use of
-that utility, the `(termios)` module offers a `(call-with-errno ...)` form:
-
-`(call-with-errno (var expression) fail-expressions ...)`
-
-:    This form evaluates `expression` and stores the return value in a
-     variable named `var` for later reference. In case
-     `(termios-failure? var)` returns `#t`, the expressions in the form's
-     body are evaluated, with the value of the last expression being the
-     return value of the `call-with-errno` form. In case `var` did not
-     signal an error, the form evaluates to `#t`.
-
-The *“Examples”* section below features an example of how to use
-`call-with-errno`.
-
-
 ## The `(termios with-exceptions)` module
 
 This module offers another approach to the same POSIX functionality as the
@@ -273,15 +228,10 @@ Possible exceptions, raised by this modules are:
 `system-error`
 
 :    Raised by any of the termios procedures, that may fail in case of an
-     actual failure. The error-handling of the procedures of this module
-     properly access `errno` using `call-with-errno` and offer the raw
-     value as well as a human readable string (retrieved via `strerror`)
-     as arguments to the exception.
+     actual failure.
 
 The API of the `(termios with-exceptions)` module otherwise exactly matches the
-one of the basic `(termios)` module, except that it *does* *not* export the
-`errno` access API, since the error handling of the module takes care of that
-for the user already.
+one of the basic `(termios)` module.
 
 
 ## Beyond `termios`
@@ -344,14 +294,16 @@ Finally, here is an example of how to use `call-with-errno` to properly access
 the value of `errno` by the use of `call-with-blocked-asyncs`:
 
 ~~~~~~~~ {.Scheme}
-(use-modules (termios))
+(use-modules (termios)
+             (srfi srfi-11))
 (define tty "/dev/ttyUSB0")
 (define prt (open-io-file tty))
 (define ts (make-termios-struct)
-(call-with-errno (errno (tc-get-attr! port ts))
-  (strerror errno)
-  (close port)
-  (quit EXIT_FAILURE))
+(let-values (((value errno) (tc-get-attr! port ts)))
+  (when (termios-failure? value)
+    (strerror errno)
+    (close port)
+    (quit EXIT_FAILURE)))
 ~~~~~~~~
 
 

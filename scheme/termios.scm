@@ -6,6 +6,7 @@
 (define-module (termios)
   #:use-module (srfi srfi-11)
   #:use-module (ice-9 optargs)
+  #:use-module (rnrs bytevectors)
   #:use-module (system foreign)
   #:use-module (termios system)
   #:export (make-termios-struct
@@ -345,13 +346,13 @@
   (let* ((n (sizeof int))
          (bv (make-bytevector n 0))
          (p (bytevector->pointer bv)))
-    (ioctl (port->fdes port) TIOCMGET p)
+    (ioctl (port->fdes port) termios-TIOCMGET p)
     (bytevector-sint-ref (pointer->bytevector p n) 0 (native-endianness) n)))
 
 (define (ioctl-tiocmset port value)
   (let ((bv (make-bytevector (sizeof int))))
     (bytevector-sint-set! bv 0 value (native-endianness) (sizeof int))
-    (ioctl (port->fdes port) TIOCMSET (bytevector->pointer bv))))
+    (ioctl (port->fdes port) termios-TIOCMSET (bytevector->pointer bv))))
 
 (define (set-io-bit port bit value)
   (let ((raw (ioctl-tiocmget port)))

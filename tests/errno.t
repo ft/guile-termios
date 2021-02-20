@@ -1,6 +1,6 @@
 ;; -*- scheme -*-
 
-;; Copyright (c) 2014-2019 Frank Terbeck <ft@bewatermyfriend.org>
+;; Copyright (c) 2014-2021 Frank Terbeck <ft@bewatermyfriend.org>
 ;; All rights reserved.
 
 (use-modules (srfi srfi-11)

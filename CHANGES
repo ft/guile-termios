@@ -1,6 +1,20 @@
  User-visible changes in guile-termios
 =======================================
 
+* 0.5 → 0.6 (released 2021-02-20):
+
+  - Add (termios frontends) to implement commonly used termios patterns
+
+  - Support for controlling DTR and RTS modem lines
+
+  - Use errno support from modern Guile instead of privately rolled version
+
+  - Fixes in byte compilation steps
+
+  - Support for non-default guild program names
+
+  - Support for newer versions of pandoc
+
 * 0.4 → 0.5 (released 2014-10-18):
 
   - Documentation can be installed via Makefile target: install-doc

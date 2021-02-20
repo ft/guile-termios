@@ -255,6 +255,20 @@ serial connections and therefore the electrical voltage level is inverted from
 the logical modem control bit.
 
 
+## The `(termios frontends)` module
+
+The `frontends` module is meant to implement patterns that commonly occur while
+using the `termios` other modules. It uses the `(termios with-exceptions)`
+module to access `termios` functionality, so its API will throw appropriately
+in case any of the low-level operations used fails.
+
+`(termios-8n1 device-name [symbol-rate])`
+
+:    Open a device named `device-name`, set it to serial mode `8N1` using
+     `symbol-rate` as the device's rate. The latter is optional. If it is not
+     specified, the function will use `termios-B9600`.
+
+
 # EXAMPLES
 
 In the first example, let's open a serial device and set it to `9600bd 8N1`
@@ -271,6 +285,13 @@ any failure would cause the script to error out automatically:
 (cf-set-speed ts termios-B9600)
 (tc-set-attr tty ts)
 (close-port tty)
+~~~~~~~~
+
+Using the `(termios frontends)` module this can also be written as:
+
+~~~~~~~~ {.Scheme}
+(use-modules (termios frontends))
+(termios-8n1 "/dev/ttyUSB0")
 ~~~~~~~~
 
 To show how to access fields in `struct termios` instances from Scheme, let's

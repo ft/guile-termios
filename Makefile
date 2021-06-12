@@ -4,8 +4,10 @@ CC = cc
 PERL_BINARY = perl
 HARNESS = prove
 TESTDRIVER = "/bin/sh ./test-driver"
-DESTDIR ?= ""
-DOC_PREFIX ?= "/usr/local"
+
+INSTALL = $(GUILE_BINARY) --no-auto-compile ./tools/install
+DESTDIR =
+PREFIX = /usr/local
 
 LOAD_PATH = $(TOPDIR)/scheme
 TEST_PATH = $(TOPDIR)/tests
@@ -61,11 +63,8 @@ clean: clean-byte-compile
 doc:
 	(cd doc && $(MAKE) all;)
 
-install-doc:
-	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./tools/install documentation $(DOC_PREFIX)
-
-install:
-	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./tools/install
+install: all
+	$(INSTALL) DESTDIR="$(DESTDIR)" PREFIX="$(PREFIX)"
 
 plausible:
 	sh ./tests/test-this-terminal.sh

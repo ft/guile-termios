@@ -1,6 +1,172 @@
-#!/bin/sh
+#!/usr/bin/guile \
+--no-auto-compile
+-s
+!#
 
-GUILE_AUTO_COMPILE=0
-export GUILE_AUTO_COMPILE
+;; -*- scheme -*-
 
-exec ${GUILE_BINARY:-guile} -s install-scheme "$@"
+(define *package* "guile-e-series")
+
+(define *manifest*
+  `((module "scheme" "termios.scm")
+    (module "scheme" "termios/with-exceptions.scm")
+    (module "scheme" "termios/system.scm")
+    (module "scheme" "termios/frontends.scm")))
+
+(use-modules (ice-9 match)
+             (ice-9 optargs))
+
+(define (make-default . lst)
+  (let ((value lst))
+    (case-lambda
+      (() (string-concatenate (map (lambda (obj)
+                                     (if (procedure? obj) (obj) obj))
+                                   value)))
+      (l (set! value l)))))
+
+(define *destdir*       (make-default ""))
+(define *package-name*  (make-default *package*))
+(define *prefix*        (make-default "/usr/local"))
+(define *bindir*        (make-default *prefix* "/bin"))
+(define *libdir*        (make-default *prefix* "/lib"))
+(define *datarootdir*   (make-default *prefix* "/share"))
+(define *guile-version* (make-default (effective-version)))
+(define *infodir*       (make-default *datarootdir* "/info"))
+(define *mandir*        (make-default *datarootdir* "/man"))
+(define *docdir*        (make-default *datarootdir* "/doc/" *package-name*))
+(define *moduledir*     (make-default *datarootdir* "/guile/site/" *guile-version*))
+(define *objectdir*     (make-default *libdir* "/guile/" *guile-version* "/site-ccache"))
+(define dryrun? #f)
+
+(define (maybe-variable str modify!)
+  (lambda (s)
+    (let* ((pf (string-append str "="))
+           (n (string-length pf)))
+      (if (string-prefix? pf s)
+          (begin (modify! (substring s n))
+                 #t)
+          #f))))
+
+(define-syntax-rule (cmdline-variable str sym)
+  (maybe-variable str (lambda (s) (sym s))))
+
+(define (usage)
+  (format #t "
+usage: install [OPTION(s)...] [PARAMETER(s)...]
+
+Options:
+
+  --help, -h       Display this help text.
+  --dry-run, -d    Run, but don't modify the file system.
+
+Parameters:
+
+  DESTDIR
+  PREFIX
+  PACKAGE
+  BINDIR
+  LIBDIR
+  DOCDIR
+  MANDIR
+  INFODIR
+  DATAROOTDIR
+  GUILE_VERSION
+  MODULEDIR
+  OBJECTDIR
+
+")
+  (quit 0))
+
+(define cmdline-processors
+  (list (lambda (s)
+          (if (or (string= s "--help")
+                  (string= s "-h"))
+              (usage)
+              #f))
+        (lambda (s)
+          (if (or (string= s "--dry-run")
+                  (string= s "-d"))
+              (begin (set! dryrun? #t)
+                     #t)
+              #f))
+        (cmdline-variable "DESTDIR"       *destdir*)
+        (cmdline-variable "PREFIX"        *prefix*)
+        (cmdline-variable "PACKAGE"       *package-name*)
+        (cmdline-variable "BINDIR"        *bindir*)
+        (cmdline-variable "LIBDIR"        *libdir*)
+        (cmdline-variable "INFODIR"       *infodir*)
+        (cmdline-variable "MANDIR"        *mandir*)
+        (cmdline-variable "DOCDIR"        *docdir*)
+        (cmdline-variable "DATAROOTDIR"   *datarootdir*)
+        (cmdline-variable "GUILE_VERSION" *guile-version*)
+        (cmdline-variable "MODULEDIR"     *moduledir*)
+        (cmdline-variable "OBJECTDIR"     *objectdir*)))
+
+(define (cmdline-process lst)
+  (for-each (lambda (str)
+              (let loop ((rest cmdline-processors))
+                (unless (null? rest)
+                  (unless ((car rest) str)
+                    (loop (cdr rest))))))
+            lst))
+
+(cmdline-process (cdr (command-line)))
+
+(define (dir? d)
+  (and (file-exists? d)
+       (file-is-directory? d)))
+
+(define (system! . cmd)
+  (let ((rc (apply system* cmd)))
+    (unless (zero? rc)
+      (format #t "System command failed. ~a~%" cmd)
+      (format #t "Giving up!~%")
+      (quit 1))))
+
+(define (file-is-executable? f)
+  (let* ((info (stat f))
+         (permissions (stat:perms info))
+         (exec-bits #o111))
+    (not (zero? (logand exec-bits permissions)))))
+
+(define (install-normal-file f d)
+  (when (file-exists? f)
+    (let* ((dd (string-append (*destdir*) d))
+           (final (string-append dd "/" (basename f))))
+      (unless (dir? dd)
+        (unless dryrun?
+          (system! "mkdir" "-p" dd)
+          (system! "chmod" "0755" dd)))
+      (format #t "Installing: ~a~%" final)
+      (unless dryrun?
+        (system! "cp" f final)
+        (let ((mode (if (file-is-executable? f)
+                        "0755" "0644")))
+          (system! "chmod" mode final))))))
+
+(define* (install-with-prefix source-dir source-file destination-generate
+                              #:optional prefix)
+  (let ((destination (if prefix
+                         (string-append (destination-generate) "/" prefix)
+                         (destination-generate))))
+    (install-normal-file (string-append source-dir "/" source-file)
+                         destination)))
+
+(define (install m)
+  (match m
+    (('program dir file)       (install-with-prefix dir file *bindir*))
+    (('documentation file)     (install-normal-file file (*docdir*)))
+    (('documentation dir file) (install-with-prefix dir file *docdir*))
+    (('infopage dir file)      (install-with-prefix dir file *infodir*))
+    (('manpage section dir file)
+     (let ((src (string-append dir "/" file))
+           (dest (string-append (*mandir*) "/man" (number->string section))))
+       (install-normal-file src dest)))
+    (('module dir file)
+     (let* ((module-prefix (dirname file))
+            (module-name (basename file ".scm"))
+            (object-file (string-append module-prefix "/" module-name ".go")))
+       (install-with-prefix dir file        *moduledir* module-prefix)
+       (install-with-prefix dir object-file *objectdir* module-prefix)))))
+
+(for-each install *manifest*)

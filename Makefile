@@ -11,8 +11,8 @@ all: gps scheme/termios/system.scm
 doc:
 	(cd doc && $(MAKE) all;)
 
-gen-platform-specifics.c: gen-gps.scm gen-gps.sh
-	GUILE_BINARY="$(GUILE_BINARY)" sh ./gen-gps.sh > $@
+gen-platform-specifics.c: gen-gps.scm
+	$(GUILE_BINARY) --no-auto-compile ./gen-gps.scm > $@
 
 gps: gen-platform-specifics.c config.h
 	$(CC) -o $@ $<

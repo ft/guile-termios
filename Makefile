@@ -2,8 +2,8 @@ TOPDIR = .
 
 CC = cc
 PERL_BINARY = perl
-HARNESS = prove
-TESTDRIVER = "/bin/sh ./test-driver"
+HARNESS = tap-harness
+TESTDRIVER = ./tools/test-driver
 
 INSTALL = $(GUILE_BINARY) --no-auto-compile ./tools/install
 DESTDIR =
@@ -71,11 +71,11 @@ plausible:
 
 test-suite-verbose:
 	@echo "Running the test suite in verbose mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --color --merge --exec $(TESTDRIVER) ./tests/*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) ./tests/*.t
 
 test-suite:
 	@echo "Running the test suite in quiet mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --color --merge --exec $(TESTDRIVER) ./tests/*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) ./tests/*.t
 
 test: plausible test-suite
 

@@ -1,13 +1,15 @@
 #!/bin/sh
 
-GUILE_LOAD_PATH=$PWD/scheme
-export GUILE_LOAD_PATH
-
-GUILE_LOAD_COMPILED_PATH=$PWD/scheme
-export GUILE_LOAD_COMPILED_PATH
-
+PERL_BINARY="${PERL_BINARY:-perl}"
+GUILE_BINARY="${GUILE_BINARY:-guile}"
+GUILE_LOAD_PATH="${GUILE_LOAD_PATH}${GUILE_LOAD_PATH:+:}$PWD/scheme"
+GUILE_LOAD_COMPILED_PATH="${GUILE_LOAD_COMPILED_PATH}${GUILE_LOAD_COMPILED_PATH:+:}$PWD/scheme"
 GUILE_AUTO_COMPILE=0
-export GUILE_AUTO_COMPILE
 
-exec "${PERL_BINARY:-perl}" ./test-device --guile "${GUILE_BINARY:-guile}" \
-                                          --test "$1"
+for i in GUILE_LOAD_PATH GUILE_LOAD_COMPILED_PATH GUILE_AUTO_COMPILE; do
+    export "$i"
+done
+unset i
+
+exec "$PERL_BINARY" ./tools/test-device --guile "$GUILE_BINARY" \
+                                        --test "$1"

@@ -9,8 +9,8 @@ HTML_META = -c manual.css
 
 DISPATCH_TEX_META = -V author="Frank Terbeck"
 DISPATCH_TEX_META += -V title="guile-termios(3) Manual"
-DISPATCH_HTML_META = $(DISPATCH_TEX_META) --highlight-style=monochrome
-DISPATCH_MAN_META = -V title="guile-termios" -V section="3" -V date="Oct, 2014"
+DISPATCH_HTML_META = $(DISPATCH_TEX_META) --metadata title="guile-termios" --highlight-style=monochrome
+DISPATCH_MAN_META = -V title="guile-termios" -V section="3" -V date="Jun, 2021"
 
 all: man html pdf
 man: $(MAN)
@@ -18,11 +18,11 @@ pdf: $(PDF)
 html: $(HTML)
 
 guile-termios.3: guile-termios.mdwn
-	pandoc -t man $(COMMONOPTIONS) $(DISPATCH_MAN_META) -o $@ guile-termios.mdwn
+	pandoc -f markdown -t man $(COMMONOPTIONS) $(DISPATCH_MAN_META) -o $@ guile-termios.mdwn
 guile-termios.pdf: guile-termios.mdwn
-	pandoc --template template.latex $(COMMONOPTIONS) $(TEX_META) $(DISPATCH_TEX_META) -o $@ guile-termios.mdwn
+	pandoc -f markdown --template template.latex $(COMMONOPTIONS) $(TEX_META) $(DISPATCH_TEX_META) -o $@ guile-termios.mdwn
 guile-termios.html: guile-termios.mdwn
-	pandoc -t html5 $(HTML_META) $(COMMONOPTIONS) $(DISPATCH_HTML_META) -o $@ guile-termios.mdwn
+	pandoc -f markdown -t html5 $(HTML_META) $(COMMONOPTIONS) $(DISPATCH_HTML_META) -o $@ guile-termios.mdwn
 
 clean:
 	rm -f $(HTML) $(PDF) $(MAN) *~

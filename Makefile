@@ -58,6 +58,7 @@ clean: clean-byte-compile
 	rm -f gps gen-platform-specifics.c scheme/termios/system.scm
 	rm -f scheme/test/*~ scheme/termios/*~ scheme/*~ *~
 	rm -f config.h
+	$(MAKE) -C doc clean
 
 doc:
 	$(MAKE) -C doc all

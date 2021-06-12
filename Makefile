@@ -67,15 +67,15 @@ install: all
 	$(INSTALL) DESTDIR="$(DESTDIR)" PREFIX="$(PREFIX)"
 
 plausible:
-	sh $(TEST_PATH)test-this-terminal.sh
+	sh $(TEST_PATH)/test-this-terminal.sh
 
 test-suite-verbose:
 	@echo "Running the test suite in verbose mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) $(TEST_PATH)*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) $(TEST_PATH)/*.t
 
 test-suite:
 	@echo "Running the test suite in quiet mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) $(TEST_PATH)*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) $(TEST_PATH)/*.t
 
 test: plausible test-suite
 

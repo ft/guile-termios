@@ -1,4 +1,10 @@
 TOPDIR = .
+LOAD_PATH = $(TOPDIR)/scheme
+TEST_PATH = $(TOPDIR)/tests
+
+GUILE_BINARY = guile
+GUILE_CALL = $(GUILE_BINARY) -L $(LOAD_PATH) -C $(LOAD_PATH) --no-auto-compile
+GUILD_BINARY ?= guild
 
 CC = cc
 PERL_BINARY = perl
@@ -8,13 +14,6 @@ TESTDRIVER = ./tools/test-driver
 INSTALL = $(GUILE_BINARY) --no-auto-compile ./tools/install
 DESTDIR =
 PREFIX = /usr/local
-
-LOAD_PATH = $(TOPDIR)/scheme
-TEST_PATH = $(TOPDIR)/tests
-
-GUILE_BINARY = guile
-GUILE_CALL = $(GUILE_BINARY) -L $(LOAD_PATH) -C $(LOAD_PATH) --no-auto-compile
-GUILD_BINARY ?= guild
 
 CFLAGS  = -Wunsupported-warning -Wunused-variable # -Wunused-toplevel
 CFLAGS += -Wunbound-variable -Warity-mismatch -Wduplicate-case-datum
@@ -61,21 +60,21 @@ clean: clean-byte-compile
 	rm -f config.h
 
 doc:
-	(cd doc && $(MAKE) all;)
+	$(MAKE) -C doc all
 
 install: all
 	$(INSTALL) DESTDIR="$(DESTDIR)" PREFIX="$(PREFIX)"
 
 plausible:
-	sh ./tests/test-this-terminal.sh
+	sh $(TEST_PATH)test-this-terminal.sh
 
 test-suite-verbose:
 	@echo "Running the test suite in verbose mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) ./tests/*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) $(TEST_PATH)*.t
 
 test-suite:
 	@echo "Running the test suite in quiet mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) ./tests/*.t
+	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) $(TEST_PATH)*.t
 
 test: plausible test-suite
 

@@ -37,14 +37,14 @@ generate: gps scheme/termios/system.scm
 
 compile: $(OBJECTS)
 
-gen-platform-specifics.c: gen-gps.scm
-	$(GUILE_BINARY) --no-auto-compile ./gen-gps.scm > $@
+gen-platform-specifics.c: tools/gen-gps.scm
+	$(GUILE_BINARY) --no-auto-compile ./tools/gen-gps.scm > $@
 
 gps: gen-platform-specifics.c config.h
 	$(CC) -o $@ $<
 
-config.h: config.h.in gen-config.h.sh
-	C_COMPILER="$(CC)" sh ./gen-config.h.sh
+config.h: config.h.in tools/gen-config.h.sh
+	C_COMPILER="$(CC)" sh ./tools/gen-config.h.sh
 
 scheme/termios/system.scm: gps
 	[ -d scheme/termios ] || mkdir -p scheme/termios
@@ -62,10 +62,10 @@ doc:
 	(cd doc && $(MAKE) all;)
 
 install-doc:
-	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./install documentation $(DOC_PREFIX)
+	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./tools/install documentation $(DOC_PREFIX)
 
 install:
-	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./install
+	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./tools/install
 
 plausible:
 	sh ./tests/test-this-terminal.sh

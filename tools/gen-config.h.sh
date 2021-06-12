@@ -13,7 +13,7 @@ export C_COMPILER
 
 for member in $members; do
     printf 'Checking whether struct termios has %s member... ' "$member"
-    if sh ./termios-struct-has.sh "$member"; then
+    if sh ./tools/termios-struct-has.sh "$member"; then
         printf 'yes.\n'
         name=$(printf '%s' "$member" | tr a-z A-Z)
         available="$available$name "

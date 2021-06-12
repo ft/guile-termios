@@ -71,11 +71,11 @@ plausible:
 
 test-suite-verbose:
 	@echo "Running the test suite in verbose mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --verbose --exec $(TESTDRIVER) $(TEST_PATH)/*.t
+	$(HARNESS) --verbose --exec $(TESTDRIVER) $(TEST_PATH)/*.t
 
 test-suite:
 	@echo "Running the test suite in quiet mode..."
-	GUILE_BINARY="$(GUILE_BINARY)" PERL_BINARY="$(PERL_BINARY)" $(HARNESS) --exec $(TESTDRIVER) $(TEST_PATH)/*.t
+	$(HARNESS) --exec $(TESTDRIVER) $(TEST_PATH)/*.t
 
 test: plausible test-suite
 

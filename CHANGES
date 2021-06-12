@@ -1,35 +1,36 @@
  User-visible changes in guile-termios
 =======================================
 
+* 0.6 → 0.6.1 (released 2021-06-12):
+
+  - Clean up project structure
+  - Reimplement installation routine
+  - Use common strategies to simplify library packaging
+  - Fix a couple of build system issues
+
+
 * 0.5 → 0.6 (released 2021-02-20):
 
   - Add (termios frontends) to implement commonly used termios patterns
-
   - Support for controlling DTR and RTS modem lines
-
   - Use errno support from modern Guile instead of privately rolled version
-
   - Fixes in byte compilation steps
-
   - Support for non-default guild program names
-
   - Support for newer versions of pandoc
+
 
 * 0.4 → 0.5 (released 2014-10-18):
 
   - Documentation can be installed via Makefile target: install-doc
-
   - API for accessing c-cc fields added: get-from-c-cc and put-into-c-cc
-
   - More termios constants added to (termios system)
-
   - Non-existent constants in (termios system) are not dropped entirely
     anymore but set to ‘#f’.
+
 
 * 0.3 → 0.4 (released 2014-10-12):
 
   - Added a reference manual, finally.
-
   - Optional key argument of ‘tc-set-attr’ changed from #:optional-action
     to #:key. Strictly speaking, this is an API change, but since this
     optional parameter was never documented, I won't bother bumping
@@ -39,20 +40,13 @@
 * 0.2 → 0.3 (released 2014-10-03):
 
   - Cygwin support
-
     This requires Guile 2 in cygwin, which at the time of writing does not
     exist as a pre-built package. If all dependencies are installed, though,
     Guile 2.0 builds fine.
-
   - Added ‘termios-failure?’
-
   - Added access to ‘errno’
-
     - get-errno
     - call-with-errno
-
   - Added high-level module (termios with-exceptions)
-
   - Added an actual test-suite (on top of the general plausibility test)
-
   - Licence switched to 2-clause BSD.

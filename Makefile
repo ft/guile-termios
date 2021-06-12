@@ -6,7 +6,9 @@ TESTDRIVER = "/bin/sh ./test-driver"
 DESTDIR ?= ""
 DOC_PREFIX ?= "/usr/local"
 
-all: gps scheme/termios/system.scm
+all: generate compile
+
+generate: gps scheme/termios/system.scm
 
 doc:
 	(cd doc && $(MAKE) all;)
@@ -57,4 +59,4 @@ test: plausible test-suite
 
 test-verbose: plausible test-suite-verbose
 
-.PHONY: all clean clean-byte-compile compile doc install plausible test-suite test-suite-verbose test test-verbose
+.PHONY: all clean clean-byte-compile compile doc generate install plausible test-suite test-suite-verbose test test-verbose

@@ -1,17 +1,41 @@
+TOPDIR = .
+
 CC = cc
-GUILE_BINARY = guile
 PERL_BINARY = perl
 HARNESS = prove
 TESTDRIVER = "/bin/sh ./test-driver"
 DESTDIR ?= ""
 DOC_PREFIX ?= "/usr/local"
 
+LOAD_PATH = $(TOPDIR)/scheme
+TEST_PATH = $(TOPDIR)/tests
+
+GUILE_BINARY = guile
+GUILE_CALL = $(GUILE_BINARY) -L $(LOAD_PATH) -C $(LOAD_PATH) --no-auto-compile
+GUILD_BINARY ?= guild
+
+CFLAGS  = -Wunsupported-warning -Wunused-variable # -Wunused-toplevel
+CFLAGS += -Wunbound-variable -Warity-mismatch -Wduplicate-case-datum
+CFLAGS += -Wbad-case-datum -Wformat -L$(LOAD_PATH)
+
+COMPILE = $(GUILD_BINARY) compile $(CFLAGS)
+
+MODULES  = scheme/termios.scm
+MODULES += scheme/termios/with-exceptions.scm
+MODULES += scheme/termios/system.scm
+MODULES += scheme/termios/frontends.scm
+OBJECTS = ${MODULES:.scm=.go}
+
+.SUFFIXES: .scm .go
+
 all: generate compile
+
+.scm.go:
+	$(COMPILE) -o $@ $<
 
 generate: gps scheme/termios/system.scm
 
-doc:
-	(cd doc && $(MAKE) all;)
+compile: $(OBJECTS)
 
 gen-platform-specifics.c: gen-gps.scm
 	$(GUILE_BINARY) --no-auto-compile ./gen-gps.scm > $@
@@ -26,10 +50,6 @@ scheme/termios/system.scm: gps
 	[ -d scheme/termios ] || mkdir -p scheme/termios
 	./gps > $@
 
-compile:
-	$(MAKE) scheme/termios/system.scm
-	GUILE_BINARY="$(GUILE_BINARY)" sh ./compile
-
 clean-byte-compile:
 	rm -f scheme/*.go scheme/termios/*.go scheme/test/*.go
 
@@ -37,6 +57,9 @@ clean: clean-byte-compile
 	rm -f gps gen-platform-specifics.c scheme/termios/system.scm
 	rm -f scheme/test/*~ scheme/termios/*~ scheme/*~ *~
 	rm -f config.h
+
+doc:
+	(cd doc && $(MAKE) all;)
 
 install-doc:
 	DESTDIR=$(DESTDIR) GUILE_BINARY="$(GUILE_BINARY)" sh ./install documentation $(DOC_PREFIX)

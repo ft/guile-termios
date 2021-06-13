@@ -11,7 +11,7 @@
 
 (with-test-bundle (guile termios errno)
   (plan 2)
-  (let ((f (open-io-file "README")))
+  (let ((f (open-input-file "README")))
     (let-values (((value errno) (base:tc-drain f)))
       (define-test (format #f "base: Return value indicates error [~a]"
                            (strerror errno))

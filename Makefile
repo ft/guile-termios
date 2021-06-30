@@ -17,7 +17,7 @@ PREFIX = /usr/local
 
 CFLAGS  = -Wunsupported-warning -Wunused-variable # -Wunused-toplevel
 CFLAGS += -Wunbound-variable -Warity-mismatch -Wduplicate-case-datum
-CFLAGS += -Wbad-case-datum -Wformat -L$(LOAD_PATH)
+CFLAGS += -Wbad-case-datum -Wformat -L$(LOAD_PATH) $(CFLAGS_ADD)
 
 COMPILE = $(GUILD_BINARY) compile $(CFLAGS)
 

@@ -1,3 +1,4 @@
+PROJECT = guile-termios
 TOPDIR = .
 LOAD_PATH = $(TOPDIR)/scheme
 TEST_PATH = $(TOPDIR)/tests
@@ -14,6 +15,7 @@ TESTDRIVER = ./tools/test-driver
 INSTALL = $(GUILE_BINARY) --no-auto-compile ./tools/install
 DESTDIR =
 PREFIX = /usr/local
+DOCDIR = $(PREFIX)/share/doc/$(PROJECT)
 
 CFLAGS  = -Wunsupported-warning -Wunused-variable # -Wunused-toplevel
 CFLAGS += -Wunbound-variable -Warity-mismatch -Wduplicate-case-datum
@@ -64,7 +66,7 @@ doc:
 	$(MAKE) -C doc all
 
 install: all
-	$(INSTALL) DESTDIR="$(DESTDIR)" PREFIX="$(PREFIX)"
+	$(INSTALL) DESTDIR="$(DESTDIR)" DOCDIR="$(DOCDIR)" PREFIX="$(PREFIX)"
 
 plausible:
 	sh $(TEST_PATH)/test-this-terminal.sh

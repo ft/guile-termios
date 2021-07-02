@@ -4,7 +4,7 @@ subtitle: Reference Manual
 author: Frank Terbeck
 section: 7
 dircategory: The Algorithmic Language Scheme
-direntry: "Guile-Termios: (termios). POSIX Termios Interface Bindings"
+direntry: "Guile-Termios: (guile-termios). POSIX Termios Interface Bindings"
 date: July, 2021
 ...
 

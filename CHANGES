@@ -1,6 +1,10 @@
  User-visible changes in guile-termios
 =======================================
 
+* 0.6.2 → 0.6.3 (released 2021-07-02):
+
+  - Allow setting DOCDIR via install make target
+
 * 0.6.1 → 0.6.2 (released 2021-07-01):
 
   - Generate GNU Info documentation

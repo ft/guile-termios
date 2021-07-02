@@ -1,9 +1,11 @@
 *.c
 *.h
 *.go
-doc/*.3
+doc/*.7
 doc/*.pdf
 doc/*.html
+doc/*.texi
+doc/*.info
 \#*\#
 *~
 gps

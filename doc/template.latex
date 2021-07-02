@@ -19,6 +19,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
+\usepackage{textcomp}
 \usepackage{fixltx2e} % provides \textsubscript
 
 \usepackage{fancyhdr}
@@ -82,8 +83,8 @@ $endif$
 
 \hypersetup{breaklinks=true,
             bookmarks=true,
-            pdfauthor={$author-meta$},
-            pdftitle={$title-meta$},
+            pdfauthor={$author$},
+            pdftitle={$title$},
             colorlinks=true,
             urlcolor=$if(urlcolor)$$urlcolor$$else$blue$endif$,
             linkcolor=$if(linkcolor)$$linkcolor$$else$magenta$endif$,
@@ -128,7 +129,10 @@ $endfor$
 $if(title)$
 \title{$title$}
 $endif$
-\author{$for(author)$$author$$sep$ \and $endfor$}
+$if(subtitle)$
+\subtitle{$subtitle$}
+$endif$
+\author{$author$}
 \date{$date$}
 
 \begin{document}

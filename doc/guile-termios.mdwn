@@ -1,3 +1,13 @@
+---
+title: Guile `(termios)`
+subtitle: Reference Manual
+author: Frank Terbeck
+section: 7
+dircategory: The Algorithmic Language Scheme
+direntry: "Guile-Termios: (termios). POSIX Termios Interface Bindings"
+date: July, 2021
+...
+
 # NAME
 
 `guile-termios` - POSIX Termios interface for GNU Guile Scheme
